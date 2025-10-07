@@ -1,0 +1,3329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diamond Data Manager | Advanced Cyber Security</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Library for generating PDFs from HTML -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+    <!-- Library for generating QR Codes -->
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- AOS for scroll animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- ======================= CSS STYLES ======================= -->
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+        --primary-color: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary-color: #64748b;
+        --accent-color: #f1f5f9;
+        --text-primary: #1e293b;
+        --text-secondary: #475569;
+        --text-light: #94a3b8;
+        --border-color: #e2e8f0;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --error-color: #ef4444;
+        --bg-white: #ffffff;
+        --bg-gray: #f8fafc;
+        --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Inter', sans-serif;
+        color: var(--text-primary);
+        background: var(--bg-gray);
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+    
+    /* Remove cyber elements */
+    .cyber-grid, .cyber-scan-line, .background-logo {
+        display: none !important;
+    }
+    
+    .background-container {
+        display: flex;
+        min-height: 100vh;
+        width: 100vw;
+        padding: 0;
+        position: relative;
+        background: var(--bg-gray);
+    }
+    
+    /* Page Sections */
+    .page-section {
+        width: 100%;
+        display: none;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .page-section.active {
+        display: block;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Toolbars - Simplified */
+    .left-toolbar, .right-toolbar {
+        position: fixed;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        z-index: 100;
+        background: var(--bg-white);
+        padding: 15px 10px;
+        border-radius: 12px;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border-color);
+    }
+    
+    .left-toolbar {
+        left: 20px;
+    }
+    
+    .right-toolbar {
+        right: 20px;
+    }
+    
+    .icon-btn {
+        color: var(--text-secondary);
+        font-size: 20px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .icon-btn:hover {
+        color: var(--primary-color);
+        background: var(--accent-color);
+        transform: scale(1.05);
+    }
+    
+    .logo-icon {
+        font-size: 24px;
+        color: var(--primary-color);
+        background: var(--accent-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Main Content */
+    .main-content {
+        flex-grow: 1;
+        margin: 0 auto;
+        max-width: 1000px;
+        width: 100%;
+    }
+    
+    .main-header {
+        margin-bottom: 30px;
+        background: var(--bg-white);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+    }
+    
+    .search-container {
+        display: flex;
+        align-items: center;
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 12px 20px;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow);
+        transition: all 0.2s ease;
+    }
+    
+    .search-container:focus-within {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    #search-input {
+        flex-grow: 1;
+        background: transparent;
+        border: none;
+        color: var(--text-primary);
+        font-size: 16px;
+        padding: 8px 12px;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    #search-input:focus {
+        outline: none;
+    }
+    
+    #search-input::placeholder {
+        color: var(--text-light);
+    }
+    
+    .search-icon, .mic-icon {
+        font-size: 18px;
+        color: var(--text-light);
+        margin: 0 8px;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+    
+    .search-icon:hover, .mic-icon:hover {
+        color: var(--primary-color);
+    }
+    
+    .filter-buttons {
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    .filter-buttons button {
+        background: var(--bg-white);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .filter-buttons button:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        transform: translateY(-1px);
+    }
+    
+    /* Security Gate */
+    #security-gate-message {
+        text-align: center;
+        padding: 60px 40px;
+        background: var(--bg-white);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+        margin: 20px 0;
+    }
+    
+    #security-gate-message h2 {
+        color: var(--text-primary);
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+    
+    #security-gate-message p {
+        color: var(--text-secondary);
+        font-size: 16px;
+    }
+    
+    #data-content-wrapper {
+        display: none;
+    }
+    
+    /* Members Grid */
+    .members-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .member-card {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 24px;
+        position: relative;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .member-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-color);
+    }
+    
+    .profile-picture {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--accent-color);
+        background-color: var(--accent-color);
+    }
+    
+    .member-info {
+        flex-grow: 1;
+    }
+    
+    .member-card h3 {
+        margin: 0 0 8px;
+        font-weight: 600;
+        font-size: 1.3rem;
+        color: var(--text-primary);
+    }
+    
+    .member-card p {
+        margin: 4px 0;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+    }
+    
+    .no-results {
+        text-align: center;
+        font-size: 1.1rem;
+        padding: 60px 40px;
+        background: var(--bg-white);
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+    }
+    
+    .favorite-icon {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 22px;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: all 0.2s ease;
+        padding: 8px;
+        border-radius: 50%;
+    }
+    
+    .favorite-icon.active {
+        color: var(--error-color);
+        transform: scale(1.1);
+    }
+    
+    .favorite-icon:hover {
+        color: var(--error-color);
+        background: var(--accent-color);
+    }
+    
+    /* Buttons */
+    .btn, .card-actions .btn, .action-btn {
+        background: var(--bg-white);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 10px 16px;
+        margin-right: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .btn:hover, .card-actions .btn:hover, .action-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        transform: translateY(-1px);
+    }
+    
+    /* Member Actions */
+    .member-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .action-btn {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+    
+    /* Modal Styles */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+    }
+    
+    .modal {
+        background: var(--bg-white);
+        padding: 30px;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 500px;
+        position: relative;
+        box-shadow: var(--shadow-lg);
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        background: transparent;
+        color: var(--text-light);
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        transition: color 0.2s ease;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+    }
+    
+    .close-btn:hover {
+        color: var(--text-primary);
+        background: var(--accent-color);
+    }
+    
+    .modal h2 {
+        margin-bottom: 20px;
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 1.5rem;
+    }
+    
+    .detail-item {
+        margin: 12px 0;
+        font-size: 15px;
+    }
+    
+    .detail-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-right: 8px;
+    }
+    
+    /* Person Selector */
+    #person-selector-modal .person-option {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border: 1px solid var(--border-color);
+    }
+    
+    #person-selector-modal .person-option:hover {
+        background-color: var(--accent-color);
+        border-color: var(--primary-color);
+    }
+    
+    /* Photo Gallery */
+    #photo-gallery-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+    }
+    
+    .gallery-photo {
+        width: 100%;
+        aspect-ratio: 1/1;
+        object-fit: cover;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        border: 1px solid var(--border-color);
+    }
+    
+    .gallery-photo:hover {
+        transform: scale(1.05);
+    }
+    
+    .photo-zoom-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1001;
+        cursor: zoom-out;
+    }
+    
+    .photo-zoom-overlay img {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+    
+    /* Dashboard Cards */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .dashboard-card {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow);
+    }
+    
+    .dashboard-card h3 {
+        color: var(--text-primary);
+        margin-bottom: 15px;
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+    
+    /* Resources Section */
+    .resources-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .resource-category {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow);
+    }
+    
+    .resource-category h3 {
+        color: var(--text-primary);
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+    
+    .circle-links-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .circle-link {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 12px;
+        border-radius: 8px;
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        transition: all 0.2s ease;
+        text-decoration: none;
+        color: var(--text-primary);
+    }
+    
+    .circle-link:hover {
+        background: var(--accent-color);
+        border-color: var(--primary-color);
+        transform: translateY(-1px);
+    }
+    
+    .circle-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--accent-color);
+        border: 2px solid var(--border-color);
+        font-size: 16px;
+        flex-shrink: 0;
+        color: var(--primary-color);
+    }
+    
+    /* Theme Toggle */
+    .theme-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+    }
+    
+    .theme-btn {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow);
+    }
+    
+    .theme-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    /* Notifications */
+    .notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .notification {
+        padding: 16px 20px;
+        border-radius: 8px;
+        background: var(--bg-white);
+        border-left: 4px solid var(--primary-color);
+        box-shadow: var(--shadow-lg);
+        max-width: 300px;
+    }
+    
+    .notification.warning { border-left-color: var(--warning-color); }
+    .notification.error { border-left-color: var(--error-color); }
+    .notification.success { border-left-color: var(--success-color); }
+    
+    .notification-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--text-primary);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .main-content {
+            margin: 0;
+            padding-top: 80px;
+        }
+        
+        .left-toolbar, .right-toolbar {
+            flex-direction: row;
+            top: 10px;
+            transform: translateY(0);
+            width: auto;
+            gap: 10px;
+            padding: 10px 15px;
+        }
+        
+        .left-toolbar {
+            left: 10px;
+            right: 10px;
+            justify-content: space-around;
+        }
+        
+        .right-toolbar {
+            top: 70px;
+            right: 10px;
+            left: auto;
+        }
+        
+        .member-card {
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .member-actions {
+            justify-content: center;
+        }
+        
+        .filter-buttons {
+            justify-content: center;
+        }
+        
+        .dashboard-grid, .resources-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        #photo-gallery-content {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .page-section {
+            padding: 10px;
+        }
+        
+        .main-header {
+            padding: 20px;
+        }
+        
+        .modal {
+            padding: 20px;
+            width: 95%;
+        }
+        
+        #photo-gallery-content {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+</head>
+<body>
+
+    <!-- ======================= HTML CONTENT ======================= -->
+    <div class="cyber-grid"></div>
+    <div class="cyber-scan-line"></div>
+    
+    <div class="background-container">
+        <i class="fas fa-gem background-logo"></i>
+        <nav class="left-toolbar">
+            <a class="icon-btn logo-icon" title="Rubi xtha official"><i class="fas fa-gem"></i></a>
+            <a href="#" class="icon-btn home-icon" title="Home"><i class="fas fa-home"></i></a>
+            <a class="icon-btn security-icon" title="Security Gate"><i class="fas fa-trash-alt"></i></a>
+            <a class="icon-btn dashboard-icon" title="Dashboard"><i class="fas fa-chart-bar"></i></a>
+            <a class="icon-btn resources-icon" title="Security Resources"><i class="fas fa-shield-alt"></i></a>
+        </nav>
+
+        <section id="data-manager-section" class="page-section active">
+            <main class="main-content">
+                <header class="main-header">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="search-input" placeholder="Search Name, Phone, Location, Occupation...">
+                        <i class="fas fa-microphone mic-icon" title="Record Audio/Screen"></i>
+                    </div>
+                    <div class="filter-buttons">
+                        <button id="location-btn">Location</button>
+                        <button id="image-btn">Image Gallery</button>
+                        <button id="id-ps-btn">Id\Ps (To-Do)</button>
+                        <button id="threat-analysis-btn">Threat Analysis</button>
+                        <button id="location-search-btn">Search Location</button>
+                        <button id="image-search-btn">Search Images</button>
+                    </div>
+                </header>
+                <div id="security-gate-message">
+                    <h2><i class="fas fa-lock"></i> Data Secured</h2>
+                    <p>Click the trash/security icon and enter the code to unlock.</p>
+                </div>
+                <div id="data-content-wrapper">
+                    <div class="members-grid" id="members-container"></div>
+                </div>
+            </main>
+        </section>
+
+        <section id="rubixtha-section" class="page-section">
+             <main class="main-content">
+                <header>
+                    <h2>Rubi xtha official</h2>
+                    <nav>
+                        <a href="#" class="rubixtha-home-link">Home</a>
+                        <a href="#contact" onclick="document.getElementById('contact').scrollIntoView({behavior: 'smooth'});">Contact</a>
+                        <a href="#all-photos-gallery-container" onclick="document.getElementById('all-photos-gallery-container').scrollIntoView({behavior: 'smooth'});">Photos</a>
+                    </nav>
+                </header>
+                <div id="contact" class="contact-info">
+                    <h3>Contact Information</h3>
+                    <p><i class="fas fa-phone"></i> Phone: 9761614027</p>
+                    <p><i class="fas fa-envelope"></i> Emails:</p>
+                    <ul>
+                        <li>Bishalxtha17@gmail.com</li>
+                        <li>samratxtha36@gmail.com</li>
+                        <li>ologyff@gmail.com</li>
+                    </ul>
+                </div>
+                <div id="all-photos-gallery-container" style="margin-top: 20px;">
+                    <h3>All Member Photos</h3>
+                    <div id="all-photos-gallery"></div>
+                </div>
+            </main>
+        </section>
+
+        <!-- NEW: Dashboard Section -->
+        <section id="dashboard-section" class="page-section">
+            <main class="main-content">
+                <header class="main-header">
+                    <h2>Cyber Security Dashboard</h2>
+                    <p>Real-time monitoring and threat analysis</p>
+                </header>
+                
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>System Status</h3>
+                        <div class="system-status">
+                            <div class="status-item">
+                                <div style="display: flex; align-items: center;">
+                                    <div class="status-indicator status-online"></div>
+                                    <span>Data Encryption</span>
+                                </div>
+                                <span>Active</span>
+                            </div>
+                            <div class="status-item">
+                                <div style="display: flex; align-items: center;">
+                                    <div class="status-indicator status-online"></div>
+                                    <span>Firewall</span>
+                                </div>
+                                <span>Enabled</span>
+                            </div>
+                            <div class="status-item">
+                                <div style="display: flex; align-items: center;">
+                                    <div class="status-indicator status-warning"></div>
+                                    <span>Intrusion Detection</span>
+                                </div>
+                                <span>Monitoring</span>
+                            </div>
+                            <div class="status-item">
+                                <div style="display: flex; align-items: center;">
+                                    <div class="status-indicator status-online"></div>
+                                    <span>Backup System</span>
+                                </div>
+                                <span>Online</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <h3>Threat Detection</h3>
+                        <div class="threat-indicator">
+                            <div class="threat-level threat-low"></div>
+                            <div class="threat-info">
+                                <div class="threat-name">Malware Scan</div>
+                                <div class="threat-desc">No threats detected</div>
+                            </div>
+                        </div>
+                        <div class="threat-indicator">
+                            <div class="threat-level threat-medium"></div>
+                            <div class="threat-info">
+                                <div class="threat-name">Network Intrusion</div>
+                                <div class="threat-desc">3 suspicious activities</div>
+                            </div>
+                        </div>
+                        <div class="threat-indicator">
+                            <div class="threat-level threat-low"></div>
+                            <div class="threat-info">
+                                <div class="threat-name">Data Breach</div>
+                                <div class="threat-desc">No breaches detected</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <h3>Security Metrics</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">98%</div>
+                                <div class="stat-label">System Uptime</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">24/7</div>
+                                <div class="stat-label">Monitoring</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">256-bit</div>
+                                <div class="stat-label">Encryption</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">0</div>
+                                <div class="stat-label">Active Threats</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <h3>Recent Activity</h3>
+                        <div class="security-logs">
+                            <div class="log-entry">
+                                <span class="log-time">12:45:23</span> - <span class="log-info">User authentication successful</span>
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-time">12:42:11</span> - <span class="log-warning">Unusual login attempt detected</span>
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-time">12:38:05</span> - <span class="log-info">Data backup completed</span>
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-time">12:35:47</span> - <span class="log-info">System scan initiated</span>
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-time">12:30:12</span> - <span class="log-info">Firewall rules updated</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <h3>Data Encryption Status</h3>
+                        <div class="encryption-status">
+                            <div class="encryption-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <h4>85% Encrypted</h4>
+                            <div class="encryption-progress">
+                                <div class="encryption-bar"></div>
+                            </div>
+                            <p>All sensitive data is protected with military-grade encryption</p>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <h3>Network Traffic</h3>
+                        <div class="chart-container">
+                            <canvas id="networkChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </section>
+
+        <!-- NEW: Resources Section -->
+        <section id="resources-section" class="page-section">
+            <main class="main-content">
+                <header class="main-header">
+                    <h2>Cyber Security Resources</h2>
+                    <p>Essential tools and links for account recovery, device tracking, and online security</p>
+                </header>
+                
+                <div class="resources-grid">
+                    <!-- Account Recovery & Password Reset -->
+                    <div class="resource-category">
+                        <h3><i class="fas fa-key"></i> Account Recovery & Password Reset</h3>
+                        <div class="circle-links-container">
+                            <a href="https://www.facebook.com/hacked" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fab fa-facebook-f"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Facebook Account Recovery</div>
+                                    <div class="circle-link-desc">Recover your hacked Facebook account</div>
+                                </div>
+                            </a>
+                            <a href="https://www.instagram.com/hacked/" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fab fa-instagram"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Instagram Account Recovery</div>
+                                    <div class="circle-link-desc">Recover your hacked Instagram account</div>
+                                </div>
+                            </a>
+                            <a href="https://www.tiktok.com/forgot-password" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fab fa-tiktok"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">TikTok Password Reset</div>
+                                    <div class="circle-link-desc">Reset your TikTok password</div>
+                                </div>
+                            </a>
+                            <a href="https://accounts.google.com/signin/recovery" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fab fa-google"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Gmail Account Recovery</div>
+                                    <div class="circle-link-desc">Recover your Gmail account</div>
+                                </div>
+                            </a>
+                            <a href="https://support.google.com/accounts" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-question-circle"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Google Account Help</div>
+                                    <div class="circle-link-desc">Get help with your Google account</div>
+                                </div>
+                            </a>
+                            <a href="https://support.google.com/youtube/answer/76187" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fab fa-youtube"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">YouTube Account Recovery</div>
+                                    <div class="circle-link-desc">Recover your YouTube account</div>
+                                </div>
+                            </a>
+                            <a href="https://support.snapchat.com/i-need-help-login" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fab fa-snapchat-ghost"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Snapchat Account Recovery</div>
+                                    <div class="circle-link-desc">Recover your Snapchat account</div>
+                                </div>
+                            </a>
+                            <a href="https://help.twitter.com/forms/signin" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fab fa-twitter"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Twitter/X Account Recovery</div>
+                                    <div class="circle-link-desc">Recover your Twitter/X account</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Find Lost or Stolen Devices -->
+                    <div class="resource-category">
+                        <h3><i class="fas fa-mobile-alt"></i> Find Lost or Stolen Devices</h3>
+                        <div class="circle-links-container">
+                            <a href="https://www.google.com/android/find" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fab fa-android"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Android Find My Device</div>
+                                    <div class="circle-link-desc">Locate your Android device</div>
+                                </div>
+                            </a>
+                            <a href="https://www.icloud.com/find" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fab fa-apple"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">iPhone Find My</div>
+                                    <div class="circle-link-desc">Locate your iPhone or Apple device</div>
+                                </div>
+                            </a>
+                            <a href="https://smartthingsfind.samsung.com" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-mobile"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Samsung SmartThings Find</div>
+                                    <div class="circle-link-desc">Find your Samsung device</div>
+                                </div>
+                            </a>
+                            <a href="https://cloud.huawei.com" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-cloud"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Huawei Cloud</div>
+                                    <div class="circle-link-desc">Find your Huawei device</div>
+                                </div>
+                            </a>
+                            <a href="https://i.mi.com" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-search"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Xiaomi Find Device</div>
+                                    <div class="circle-link-desc">Locate your Xiaomi device</div>
+                                </div>
+                            </a>
+                            <a href="https://cloud.realme.com" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Realme Cloud</div>
+                                    <div class="circle-link-desc">Find your Realme device</div>
+                                </div>
+                            </a>
+                            <a href="https://cloud.oppo.com/" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-location-arrow"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Oppo Cloud</div>
+                                    <div class="circle-link-desc">Find your Oppo device</div>
+                                </div>
+                            </a>
+                            <a href="https://cloud.vivo.com" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-crosshairs"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Vivo Cloud</div>
+                                    <div class="circle-link-desc">Find your Vivo device</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Online Security & Privacy Tools -->
+                    <div class="resource-category">
+                        <h3><i class="fas fa-shield-alt"></i> Online Security & Privacy Tools</h3>
+                        <div class="circle-links-container">
+                            <a href="https://myaccount.google.com/security-checkup" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-user-shield"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Google Security Checkup</div>
+                                    <div class="circle-link-desc">Check your Google account security</div>
+                                </div>
+                            </a>
+                            <a href="https://www.facebook.com/privacy/checkup" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-user-check"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Facebook Privacy Checkup</div>
+                                    <div class="circle-link-desc">Review your Facebook privacy settings</div>
+                                </div>
+                            </a>
+                            <a href="https://haveibeenpwned.com" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Have I Been Pwned</div>
+                                    <div class="circle-link-desc">Check if your email was in a data breach</div>
+                                </div>
+                            </a>
+                            <a href="https://www.virustotal.com" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-virus"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">VirusTotal File Scanner</div>
+                                    <div class="circle-link-desc">Scan files for viruses and malware</div>
+                                </div>
+                            </a>
+                            <a href="https://www.urlvoid.com/" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-link"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">URLVoid</div>
+                                    <div class="circle-link-desc">Check if a website is safe</div>
+                                </div>
+                            </a>
+                            <a href="https://passwords.google.com/" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-lock"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Google Password Manager</div>
+                                    <div class="circle-link-desc">Manage your saved passwords</div>
+                                </div>
+                            </a>
+                            <a href="https://bitwarden.com/password-generator/" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-key"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Bitwarden Password Generator</div>
+                                    <div class="circle-link-desc">Generate strong passwords</div>
+                                </div>
+                            </a>
+                            <a href="https://proton.me/mail" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-envelope"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">ProtonMail</div>
+                                    <div class="circle-link-desc">Secure email service</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Developer & Security Education -->
+                    <div class="resource-category">
+                        <h3><i class="fas fa-graduation-cap"></i> Developer & Security Education</h3>
+                        <div class="circle-links-container">
+                            <a href="https://owasp.org/" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-code"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">OWASP</div>
+                                    <div class="circle-link-desc">Open Web Application Security Project</div>
+                                </div>
+                            </a>
+                            <a href="https://developers.google.com/web/fundamentals/security" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fab fa-google"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Google Web Security</div>
+                                    <div class="circle-link-desc">Web security fundamentals</div>
+                                </div>
+                            </a>
+                            <a href="https://developer.mozilla.org/" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fab fa-firefox"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Mozilla Developer Network</div>
+                                    <div class="circle-link-desc">Web development resources</div>
+                                </div>
+                            </a>
+                            <a href="https://www.freecodecamp.org/news/tag/cybersecurity/" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-laptop-code"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">FreeCodeCamp Security</div>
+                                    <div class="circle-link-desc">Cybersecurity lessons and tutorials</div>
+                                </div>
+                            </a>
+                            <a href="https://tryhackme.com/" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-user-secret"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">TryHackMe</div>
+                                    <div class="circle-link-desc">Learn cybersecurity through hands-on exercises</div>
+                                </div>
+                            </a>
+                            <a href="https://www.hackthebox.com/" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-cube"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Hack The Box</div>
+                                    <div class="circle-link-desc">Penetration testing platform</div>
+                                </div>
+                            </a>
+                            <a href="https://www.geeksforgeeks.org/cyber-security/" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-book"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">GeeksForGeeks Cyber Security</div>
+                                    <div class="circle-link-desc">Cybersecurity articles and tutorials</div>
+                                </div>
+                            </a>
+                            <a href="https://www.cybrary.it/" target="_blank" class="circle-link">
+                                <div class="circle-icon"><i class="fas fa-university"></i></div>
+                                <div class="circle-link-text">
+                                    <div class="circle-link-name">Cybrary</div>
+                                    <div class="circle-link-desc">Cybersecurity training platform</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </section>
+
+        <nav class="right-toolbar">
+            <a class="icon-btn" id="call-btn" title="Call"><i class="fas fa-phone"></i></a>
+            <a class="icon-btn" id="light-btn" title="Camera"><i class="fas fa-lightbulb"></i></a>
+            <a class="icon-btn" id="aeroplane-btn" title="Connectivity"><i class="fas fa-plane"></i></a>
+        </nav>
+        
+        <!-- NEW: Theme Toggle -->
+        <div class="theme-toggle">
+            <div class="theme-btn" id="theme-toggle-btn">
+                <i class="fas fa-moon"></i>
+            </div>
+        </div>
+        
+        <!-- NEW: Notification Container -->
+        <div class="notification-container" id="notification-container"></div>
+    </div>
+
+    <!-- ========= MODALS ========= -->
+    <div class="modal-overlay" id="person-selector-modal"><div class="modal"><button class="close-btn">&times;</button><h2 id="person-selector-title">Select a Person</h2><div id="person-selector-content"></div></div></div>
+    <div class="modal-overlay" id="member-detail-modal"><div class="modal"><button class="close-btn">&times;</button><h2 id="member-detail-title">Member Details</h2><div id="member-detail-content"></div></div></div>
+    <div class="modal-overlay" id="photo-gallery-modal"><div class="modal" style="max-width: 800px;"><button class="close-btn">&times;</button><h2 id="photo-gallery-title">Photo Gallery</h2><div id="photo-gallery-content"></div></div></div>
+    <div class="modal-overlay" id="todo-modal"><div class="modal"><button class="close-btn">&times;</button><h2>To-Do List (Id\Ps)</h2><form id="todo-form"><input type="text" id="todo-input" placeholder="Work to do, time, details..." required><select id="todo-priority"><option value="normal">Normal</option><option value="important">Important</option></select><button type="submit" class="btn">Add</button></form><div id="todo-list-container" style="margin-top: 20px;"><ul id="todo-list"></ul></div><div class="card-actions" style="margin-top:20px;"><button class="btn" id="todo-print-btn">Print</button><button class="btn" id="todo-pdf-btn">Save PDF</button><button class="btn" id="todo-share-btn">Share</button></div></div></div>
+    <div class="modal-overlay" id="camera-modal"><div class="modal"><button class="close-btn">&times;</button><h2>Camera & Video</h2><video id="camera-feed" autoplay playsinline></video><div id="camera-controls" class="card-actions"><button id="snap-photo-btn" class="btn"><i class="fas fa-camera"></i> Take Photo</button><button id="record-video-btn" class="btn"><i class="fas fa-video"></i> Start Recording</button></div><div id="camera-output"></div></div></div>
+    <div class="modal-overlay" id="recorder-modal"><div class="modal"><button class="close-btn">&times;</button><h2>Recorder</h2><p>Choose what you would like to record.</p><div id="recorder-controls" class="card-actions"><button id="record-audio-btn" class="btn"><i class="fas fa-microphone-alt"></i> Record Audio</button><button id="record-screen-btn" class="btn"><i class="fas fa-desktop"></i> Record Screen</button><button id="stop-recording-btn" class="btn" style="display: none; background-color: #e74c3c;"><i class="fas fa-stop"></i> Stop</button></div><div id="recorder-output"></div></div></div>
+    <div class="modal-overlay" id="connectivity-modal"><div class="modal"><button class="close-btn">&times;</button><h2>Connectivity Status</h2><div id="connectivity-content"><h3><i class="fas fa-wifi"></i> Wi-Fi (Simulated)</h3><p class="detail-item"><span class="detail-label">Name:</span> <span id="wifi-name">MyHome_WiFi_5G</span></p><p class="detail-item"><span class="detail-label">Signal:</span> <span>Excellent</span></p><p class="detail-item"><span class="detail-label">Speed:</span> <span>~150 Mbps</span></p><p class="detail-item"><span class="detail-label">Distance:</span> <span>~5 meters</span></p><div id="wifi-qrcode-container"><p class="detail-label">Wi-Fi QR Code:</p><div id="wifi-qrcode"></div></div><h3><i class="fab fa-bluetooth-b"></i> Bluetooth (Simulated)</h3><p class="detail-item"><span class="detail-label">Status:</span> Connected</p><p class="detail-item"><span class="detail-label">Device:</span> My BT Headphones</p><p class="detail-item"><span class="detail-label">Range:</span> Strong</p></div></div></div>
+
+    <!-- NEW: Threat Analysis Modal -->
+    <div class="modal-overlay" id="threat-analysis-modal">
+        <div class="modal" style="max-width: 700px;">
+            <button class="close-btn">&times;</button>
+            <h2>Threat Analysis Report</h2>
+            <div id="threat-analysis-content">
+                <div class="threat-indicator">
+                    <div class="threat-level threat-low"></div>
+                    <div class="threat-info">
+                        <div class="threat-name">Overall Security Status</div>
+                        <div class="threat-desc">System is secure with minimal risks</div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card" style="margin-top: 20px;">
+                    <h3>Vulnerability Assessment</h3>
+                    <div class="chart-container">
+                        <canvas id="vulnerabilityChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card" style="margin-top: 20px;">
+                    <h3>Security Recommendations</h3>
+                    <ul style="padding-left: 20px; margin-top: 10px;">
+                        <li>Update encryption protocols to AES-256</li>
+                        <li>Implement multi-factor authentication</li>
+                        <li>Schedule regular security audits</li>
+                        <li>Enhance firewall rules for external access</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================= JAVASCRIPT LOGIC ======================= -->
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ======== COMPLETE MEMBER DATA WITH SOCIAL PROFILES =========
+   const membersData = [
+    {
+        id: 1, 
+        name: "Aaditya Barakoti", 
+        surname: "Barakoti", 
+        phone: "‪+9779763613059‬", 
+        email: "", 
+        birth: "", 
+        address: "Malekhu", 
+        education: "bright future", 
+        brother: "", 
+        password: "",
+        fullName: "Aaditya Barakoti",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "Dhading, Nepal",
+        occupation: "Student",
+        emergencyContact: "‪+9779763613059‬",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://www.facebook.com/aaditya.barakoti/",
+                username: "aaditya.barakoti"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/aaditya.barakoti",
+                username: "aaditya.barakoti"
+            },
+            {
+                platform: "Twitter",
+                url: "https://twitter.com/aaditya_barakoti",
+                username: "aaditya_barakoti"
+            }
+        ],
+        image: "Screenshot 2025-10-07 at 8.04.06 am.png",
+        locationLink: "https://maps.app.goo.gl/t6YAowD8wcMt9fn98",
+        photoGallery: [
+            "Screenshot 2025-10-07 at 8.04.06 am.png"
+        ]
+    },
+    {
+        id: 2, 
+        name: "Aakash Thakuri", 
+        surname: "Aakash Thakuri", 
+        phone: "9749329243", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Aakash Thakuri",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "Pokhara, Nepal",
+        occupation: "Student",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/aakash.thakuri",
+                username: "aakash.thakuri"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/aakash.thakuri",
+                username: "aakash.thakuri"
+            }
+        ],
+        image: "https://via.placeholder.com/150/007BFF/FFFFFF?text=AT", 
+        locationLink: "https://maps.google.com/?q=Pokhara",
+        photoGallery: [
+            "https://via.placeholder.com/300/007BFF/FFFFFF?text=AT1",
+            "https://via.placeholder.com/300/007BFF/FFFFFF?text=AT2"
+        ]
+    },
+    {
+        id: 3, 
+        name: "aarachona", 
+        surname: "aaru", 
+        phone: "9767195842", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Aarachona",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "Dharan, Nepal",
+        occupation: "Student",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/aarachona",
+                username: "aarachona"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/aarachona",
+                username: "aarachona"
+            },
+            {
+                platform: "TikTok",
+                url: "https://tiktok.com/@aarachona",
+                username: "aarachona"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f3722c/FFFFFF?text=A", 
+        locationLink: "https://maps.google.com/?q=Dharan",
+        photoGallery: [
+            "https://via.placeholder.com/300/f3722c/FFFFFF?text=A1",
+            "https://via.placeholder.com/300/f3722c/FFFFFF?text=A2"
+        ]
+    },
+    {
+        id: 4, 
+        name: "Aayush sapkota", 
+        surname: "Aayush sapkota", 
+        phone: "", 
+        email: "", 
+        birth: "15-Dec-05", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Aayush Sapkota",
+        dateOfBirth: "15-Dec-2005",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "Butwal, Nepal",
+        occupation: "Student",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/aayush.sapkota",
+                username: "aayush.sapkota"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f8961e/FFFFFF?text=AS", 
+        locationLink: "https://maps.google.com/?q=Butwal",
+        photoGallery: [
+            "https://via.placeholder.com/300/f8961e/FFFFFF?text=AS1",
+            "https://via.placeholder.com/300/f8961e/FFFFFF?text=AS2"
+        ]
+    },
+    {
+        id: 5, 
+        name: "aayusha tamang", 
+        surname: "aayusha tamang", 
+        phone: "", 
+        email: "", 
+        birth: "16-Jul-08", 
+        address: "galaudi", 
+        education: "munal, bageshwori", 
+        brother: "ayush tamang", 
+        password: "",
+        fullName: "Aayusha Tamang",
+        dateOfBirth: "16-Jul-2008",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "Galaudi, Nepal",
+        occupation: "Student",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/aayusha.tamang",
+                username: "aayusha.tamang"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/aayusha.tamang",
+                username: "aayusha.tamang"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f9844a/FFFFFF?text=AT", 
+        locationLink: "https://maps.google.com/?q=Galaudi",
+        photoGallery: [
+            "https://via.placeholder.com/300/f9844a/FFFFFF?text=AT1",
+            "https://via.placeholder.com/300/f9844a/FFFFFF?text=AT2"
+        ]
+    },
+    {
+        id: 6, 
+        name: "ahila kumari ram", 
+        surname: "ahila kumari ram", 
+        phone: "9861829096", 
+        email: "", 
+        birth: "", 
+        address: "gajuri", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Ahila Kumari Ram",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "Gajuri, Nepal",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/ahila.ram",
+                username: "ahila.ram"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f9c74f/FFFFFF?text=AKR", 
+        locationLink: "https://maps.google.com/?q=Gajuri",
+        photoGallery: [
+            "https://via.placeholder.com/300/f9c74f/FFFFFF?text=AKR1",
+            "https://via.placeholder.com/300/f9c74f/FFFFFF?text=AKR2"
+        ]
+    },
+    {
+        id: 7, 
+        name: "amrit thapa magar", 
+        surname: "amrit thapa magar", 
+        phone: "9764505965", 
+        email: "", 
+        birth: "", 
+        address: "gajuri", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Amrit Thapa Magar",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "Gajuri, Nepal",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/amrit.thapa",
+                username: "amrit.thapa"
+            }
+        ],
+        image: "https://via.placeholder.com/150/90be6d/FFFFFF?text=ATM", 
+        locationLink: "https://maps.google.com/?q=Gajuri",
+        photoGallery: [
+            "https://via.placeholder.com/300/90be6d/FFFFFF?text=ATM1",
+            "https://via.placeholder.com/300/90be6d/FFFFFF?text=ATM2"
+        ]
+    },
+    {
+        id: 8, 
+        name: "ananta puri", 
+        surname: "ananta puri", 
+        phone: "9813137998", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Ananta Puri",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "Kathmandu, Nepal",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/ananta.puri",
+                username: "ananta.puri"
+            },
+            {
+                platform: "LinkedIn",
+                url: "https://linkedin.com/in/ananta-puri",
+                username: "ananta-puri"
+            }
+        ],
+        image: "https://via.placeholder.com/150/43aa8b/FFFFFF?text=AP", 
+        locationLink: "https://maps.google.com/?q=Kathmandu",
+        photoGallery: [
+            "https://via.placeholder.com/300/43aa8b/FFFFFF?text=AP1",
+            "https://via.placeholder.com/300/43aa8b/FFFFFF?text=AP2"
+        ]
+    },
+    {
+        id: 9, 
+        name: "anish tripathi", 
+        surname: "anish tripathi", 
+        phone: "9761828293", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Anish Tripathi",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "Biratnagar, Nepal",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/anish.tripathi",
+                username: "anish.tripathi"
+            },
+            {
+                platform: "GitHub",
+                url: "https://github.com/anish",
+                username: "anish"
+            }
+        ],
+        image: "https://via.placeholder.com/150/4d908e/FFFFFF?text=AT", 
+        locationLink: "https://maps.google.com/?q=Biratnagar",
+        photoGallery: [
+            "https://via.placeholder.com/300/4d908e/FFFFFF?text=AT1",
+            "https://via.placeholder.com/300/4d908e/FFFFFF?text=AT2"
+        ]
+    },
+    {
+        id: 10, 
+        name: "ayusha/ayush lama", 
+        surname: "ayusha/ayush lama", 
+        phone: "9803315553", 
+        email: "", 
+        birth: "", 
+        address: "gajuri", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Ayusha/Ayush Lama",
+        dateOfBirth: "",
+        gender: "",
+        nationality: "Nepali",
+        permanentAddress: "Gajuri, Nepal",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/ayusha.lama",
+                username: "ayusha.lama"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/ayusha.lama",
+                username: "ayusha.lama"
+            }
+        ],
+        image: "https://via.placeholder.com/150/577590/FFFFFF?text=AL", 
+        locationLink: "https://maps.google.com/?q=Gajuri",
+        photoGallery: [
+            "https://via.placeholder.com/300/577590/FFFFFF?text=AL1",
+            "https://via.placeholder.com/300/577590/FFFFFF?text=AL2"
+        ]
+    },
+    {
+        id: 11, 
+        name: "binisha sedhai", 
+        surname: "binisha sedhai", 
+        phone: "9764596418", 
+        email: "", 
+        birth: "", 
+        address: "malekhu", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Binisha Sedhai",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "Malekhu, Nepal",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/binisha.sedhai",
+                username: "binisha.sedhai"
+            }
+        ],
+        image: "https://via.placeholder.com/150/277da1/FFFFFF?text=BS", 
+        locationLink: "https://maps.google.com/?q=Malekhu",
+        photoGallery: [
+            "https://via.placeholder.com/300/277da1/FFFFFF?text=BS1",
+            "https://via.placeholder.com/300/277da1/FFFFFF?text=BS2"
+        ]
+    },
+    {
+        id: 12, 
+        name: "diya paudel", 
+        surname: "diya paudel", 
+        phone: "", 
+        email: "menukapaudel82@gmail.com", 
+        birth: "", 
+        address: "adamtar", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Diya Paudel",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "Adamtar, Nepal",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/diya.paudel",
+                username: "diya.paudel"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/diya.paudel",
+                username: "diya.paudel"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f94144/FFFFFF?text=DP", 
+        locationLink: "https://maps.google.com/?q=Adamtar",
+        photoGallery: [
+            "https://via.placeholder.com/300/f94144/FFFFFF?text=DP1",
+            "https://via.placeholder.com/300/f94144/FFFFFF?text=DP2"
+        ]
+    },
+    {
+        id: 13, 
+        name: "gretal sapkota", 
+        surname: "gretal sapkota", 
+        phone: "9808494189", 
+        email: "", 
+        birth: "30-Sep-08", 
+        address: "gajuri", 
+        education: "munal, bageshwori", 
+        brother: "", 
+        password: "",
+        fullName: "Gretal Sapkota",
+        dateOfBirth: "30-Sep-2008",
+        gender: "",
+        nationality: "Nepali",
+        permanentAddress: "Gajuri, Nepal",
+        occupation: "Student",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/gretal.sapkota",
+                username: "gretal.sapkota"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/gretal.sapkota",
+                username: "gretal.sapkota"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f3722c/FFFFFF?text=GS", 
+        locationLink: "https://maps.google.com/?q=Gajuri",
+        photoGallery: [
+            "https://via.placeholder.com/300/f3722c/FFFFFF?text=GS1",
+            "https://via.placeholder.com/300/f3722c/FFFFFF?text=GS2"
+        ]
+    },
+    {
+        id: 14, 
+        name: "hansel sapkota", 
+        surname: "hansel sapkota", 
+        phone: "9841272806", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "menukapaudel82@",
+        fullName: "Hansel Sapkota",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/hansel.sapkota",
+                username: "hansel.sapkota"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f8961e/FFFFFF?text=HS", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 15, 
+        name: "jasmine shrestha", 
+        surname: "jasmine shrestha", 
+        phone: "9764624643", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Jasmine Shrestha",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/jasmine.shrestha",
+                username: "jasmine.shrestha"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/jasmine.shrestha",
+                username: "jasmine.shrestha"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f9844a/FFFFFF?text=JS", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 16, 
+        name: "kabita bhujel", 
+        surname: "kabita bhujel", 
+        phone: "9767568064", 
+        email: "bhujulreeya@gmail.com", 
+        birth: "", 
+        address: "mulabari", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Kabita Bhujel",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "Mulabari, Nepal",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/kabita.bhujel",
+                username: "kabita.bhujel"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/kabita.bhujel",
+                username: "kabita.bhujel"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f9c74f/FFFFFF?text=KB", 
+        locationLink: "https://maps.google.com/?q=Mulabari",
+        photoGallery: [
+            "https://via.placeholder.com/300/f9c74f/FFFFFF?text=KB1",
+            "https://via.placeholder.com/300/f9c74f/FFFFFF?text=KB2"
+        ]
+    },
+    {
+        id: 17, 
+        name: "kalpana shrestha", 
+        surname: "kalpana shrestha", 
+        phone: "9823531974", 
+        email: "", 
+        birth: "", 
+        address: "baseri", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Kalpana Shrestha",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "Baseri, Nepal",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/kalpana.shrestha",
+                username: "kalpana.shrestha"
+            }
+        ],
+        image: "https://via.placeholder.com/150/90be6d/FFFFFF?text=KS", 
+        locationLink: "https://maps.google.com/?q=Baseri",
+        photoGallery: [
+            "https://via.placeholder.com/300/90be6d/FFFFFF?text=KS1",
+            "https://via.placeholder.com/300/90be6d/FFFFFF?text=KS2"
+        ]
+    },
+    {
+        id: 18, 
+        name: "kristi bhujel", 
+        surname: "kristi bhujel", 
+        phone: "9823466852", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Kristi Bhujel",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/kristi.bhujel",
+                username: "kristi.bhujel"
+            }
+        ],
+        image: "https://via.placeholder.com/150/43aa8b/FFFFFF?text=KB", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 19, 
+        name: "lija magar", 
+        surname: "lija magar", 
+        phone: "", 
+        email: "", 
+        birth: "", 
+        address: "mulabari", 
+        education: "", 
+        brother: "", 
+        password: "2334445555",
+        fullName: "Lija Magar",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "Mulabari, Nepal",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/lija.magar",
+                username: "lija.magar"
+            }
+        ],
+        image: "https://via.placeholder.com/150/4d908e/FFFFFF?text=LM", 
+        locationLink: "https://maps.google.com/?q=Mulabari",
+        photoGallery: [
+            "https://via.placeholder.com/300/4d908e/FFFFFF?text=LM1",
+            "https://via.placeholder.com/300/4d908e/FFFFFF?text=LM2"
+        ]
+    },
+    {
+        id: 20, 
+        name: "mgr saniya/kabita", 
+        surname: "mgr saniya/kabita", 
+        phone: "9767568064", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Mgr Saniya/Kabita",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/mgr.saniya",
+                username: "mgr.saniya"
+            }
+        ],
+        image: "https://via.placeholder.com/150/577590/FFFFFF?text=MSK", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 21, 
+        name: "muskan chhetri", 
+        surname: "muskan chhetri", 
+        phone: "", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "2334445555@",
+        fullName: "Muskan Chhetri",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/muskan.chhetri",
+                username: "muskan.chhetri"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/muskan.chhetri",
+                username: "muskan.chhetri"
+            }
+        ],
+        image: "https://via.placeholder.com/150/277da1/FFFFFF?text=MC", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 22, 
+        name: "niran tamang", 
+        surname: "niran tamang", 
+        phone: "", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Niran Tamang",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/niran.tamang",
+                username: "niran.tamang"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f94144/FFFFFF?text=NT", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 23, 
+        name: "nirmal pandey", 
+        surname: "nirmal pandey", 
+        phone: "", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Nirmal Pandey",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/nirmal.pandey",
+                username: "nirmal.pandey"
+            },
+            {
+                platform: "LinkedIn",
+                url: "https://linkedin.com/in/nirmal-pandey",
+                username: "nirmal-pandey"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f3722c/FFFFFF?text=NP", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 24, 
+        name: "pooja regmi", 
+        surname: "miss", 
+        phone: "9867163407", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Pooja Regmi",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/pooja.regmi",
+                username: "pooja.regmi"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/pooja.regmi",
+                username: "pooja.regmi"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f8961e/FFFFFF?text=PR", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 25, 
+        name: "prabhat korala", 
+        surname: "prabhat korala", 
+        phone: "", 
+        email: "", 
+        birth: "", 
+        address: "malekhu", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Prabhat Korala",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "Malekhu, Nepal",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/prabhat.korala",
+                username: "prabhat.korala"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f9844a/FFFFFF?text=PK", 
+        locationLink: "https://maps.google.com/?q=Malekhu",
+        photoGallery: [
+            "https://via.placeholder.com/300/f9844a/FFFFFF?text=PK1",
+            "https://via.placeholder.com/300/f9844a/FFFFFF?text=PK2"
+        ]
+    },
+    {
+        id: 26, 
+        name: "pramisha tamang", 
+        surname: "pramisha tamang", 
+        phone: "9749323371", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Pramisha Tamang",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/pramisha.tamang",
+                username: "pramisha.tamang"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/pramisha.tamang",
+                username: "pramisha.tamang"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f9c74f/FFFFFF?text=PT", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 27, 
+        name: "prashvi poudel", 
+        surname: "prashvi poudel", 
+        phone: "9846584011", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Prashvi Poudel",
+        dateOfBirth: "",
+        gender: "",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/prashvi.poudel",
+                username: "prashvi.poudel"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/prashvi.poudel",
+                username: "prashvi.poudel"
+            },
+            {
+                platform: "Twitter",
+                url: "https://twitter.com/prashvi_poudel",
+                username: "prashvi_poudel"
+            },
+            {
+                platform: "LinkedIn",
+                url: "https://linkedin.com/in/prashvi-poudel",
+                username: "prashvi-poudel"
+            },
+            {
+                platform: "GitHub",
+                url: "https://github.com/prashvi",
+                username: "prashvi"
+            }
+        ],
+        image: "https://via.placeholder.com/150/90be6d/FFFFFF?text=PP", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 28, 
+        name: "rakshya bishwokarma", 
+        surname: "rakshya bishwokarma", 
+        phone: "9765837321", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Rakshya Bishwokarma",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/rakshya.bishwokarma",
+                username: "rakshya.bishwokarma"
+            }
+        ],
+        image: "https://via.placeholder.com/150/43aa8b/FFFFFF?text=RB", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 29, 
+        name: "sajak stha", 
+        surname: "sajak stha", 
+        phone: "981904799", 
+        email: "sajakxtha@gmail.com", 
+        birth: "", 
+        address: "Gajuri", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Sajak Stha",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "Gajuri, Nepal",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/sajak.stha",
+                username: "sajak.stha"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/sajak.stha",
+                username: "sajak.stha"
+            }
+        ],
+        image: "https://via.placeholder.com/150/4d908e/FFFFFF?text=SS", 
+        locationLink: "https://maps.google.com/?q=Gajuri",
+        photoGallery: [
+            "https://via.placeholder.com/300/4d908e/FFFFFF?text=SS1",
+            "https://via.placeholder.com/300/4d908e/FFFFFF?text=SS2"
+        ]
+    },
+    {
+        id: 30, 
+        name: "seetal tamang", 
+        surname: "seetal tamang", 
+        phone: "", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Seetal Tamang",
+        dateOfBirth: "",
+        gender: "",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/seetal.tamang",
+                username: "seetal.tamang"
+            }
+        ],
+        image: "https://via.placeholder.com/150/577590/FFFFFF?text=ST", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 31, 
+        name: "shreya sunar", 
+        surname: "shreya sunar", 
+        phone: "9860169621", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Shreya Sunar",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/shreya.sunar",
+                username: "shreya.sunar"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/shreya.sunar",
+                username: "shreya.sunar"
+            }
+        ],
+        image: "https://via.placeholder.com/150/277da1/FFFFFF?text=SS", 
+        locationLink: "",
+        photoGallery: ["/images/1.png"]
+    },
+    {
+        id: 32, 
+        name: "sital tamang", 
+        surname: "sital tamang", 
+        phone: "9860169621", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "", 
+        fullName: "Sital Tamang",
+        dateOfBirth: "",
+        gender: "",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/sital.tamang",
+                username: "sital.tamang"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f94144/FFFFFF?text=ST", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 33, 
+        name: "siwani pathak", 
+        surname: "siwani pathak", 
+        phone: "", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Siwani Pathak",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/siwani.pathak",
+                username: "siwani.pathak"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/siwani.pathak",
+                username: "siwani.pathak"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f3722c/FFFFFF?text=SP", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 34, 
+        name: "smriti gurung", 
+        surname: "smriti gurung", 
+        phone: "9767561473", 
+        email: "deepikadhapani@gmail.com", 
+        birth: "", 
+        address: "Bhal dada", 
+        education: "", 
+        brother: "", 
+        password: "2334445555@",
+        fullName: "Smriti Gurung",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "Bhal Dada, Nepal",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/smriti.gurung",
+                username: "smriti.gurung"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/smriti.gurung",
+                username: "smriti.gurung"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f8961e/FFFFFF?text=SG", 
+        locationLink: "https://maps.google.com/?q=Bhal+Dada",
+        photoGallery: [
+            "https://via.placeholder.com/300/f8961e/FFFFFF?text=SG1",
+            "https://via.placeholder.com/300/f8961e/FFFFFF?text=SG2"
+        ]
+    },
+    {
+        id: 35, 
+        name: "subina tamang", 
+        surname: "subina tamang", 
+        phone: "9803336299", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Subina Tamang",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/subina.tamang",
+                username: "subina.tamang"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f9844a/FFFFFF?text=ST", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 36, 
+        name: "Suman Parajuli", 
+        surname: "Dp sir", 
+        phone: "", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Suman Parajuli",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "Teacher",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/suman.parajuli",
+                username: "suman.parajuli"
+            },
+            {
+                platform: "LinkedIn",
+                url: "https://linkedin.com/in/suman-parajuli",
+                username: "suman-parajuli"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f9c74f/FFFFFF?text=SP", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 37, 
+        name: "sunil shrestha", 
+        surname: "sunil shrestha", 
+        phone: "", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Sunil Shrestha",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/sunil.shrestha",
+                username: "sunil.shrestha"
+            }
+        ],
+        image: "https://via.placeholder.com/150/90be6d/FFFFFF?text=SS", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 38, 
+        name: "supriya praja", 
+        surname: "supriya praja", 
+        phone: "", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Supriya Praja",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/supriya.praja",
+                username: "supriya.praja"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/supriya.praja",
+                username: "supriya.praja"
+            }
+        ],
+        image: "https://via.placeholder.com/150/43aa8b/FFFFFF?text=SP", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 39, 
+        name: "suraj bhandari", 
+        surname: "suraj bhandari", 
+        phone: "", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Suraj Bhandari",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/suraj.bhandari",
+                username: "suraj.bhandari"
+            }
+        ],
+        image: "https://via.placeholder.com/150/4d908e/FFFFFF?text=SB", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 40, 
+        name: "tapassingh thapa", 
+        surname: "tapassingh thapa", 
+        phone: "", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Tapas Singh Thapa",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/tapas.thapa",
+                username: "tapas.thapa"
+            }
+        ],
+        image: "https://via.placeholder.com/150/577590/FFFFFF?text=TT", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 41, 
+        name: "thapa sk", 
+        surname: "sir", 
+        phone: "9841801509", 
+        email: "", 
+        birth: "May-26", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Thapa SK",
+        dateOfBirth: "26-May",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "Teacher",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/thapa.sk",
+                username: "thapa.sk"
+            },
+            {
+                platform: "LinkedIn",
+                url: "https://linkedin.com/in/thapa-sk",
+                username: "thapa-sk"
+            }
+        ],
+        image: "https://via.placeholder.com/150/277da1/FFFFFF?text=TSK", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 42, 
+        name: "trilochana lohani", 
+        surname: "sir", 
+        phone: "", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Trilochana Lohani",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "Teacher",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/trilochana.lohani",
+                username: "trilochana.lohani"
+            },
+            {
+                platform: "LinkedIn",
+                url: "https://linkedin.com/in/trilochana-lohani",
+                username: "trilochana-lohani"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f94144/FFFFFF?text=TL", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 43, 
+        name: "uma sharma", 
+        surname: "miss", 
+        phone: "", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Uma Sharma",
+        dateOfBirth: "",
+        gender: "Female",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/uma.sharma",
+                username: "uma.sharma"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f3722c/FFFFFF?text=US", 
+        locationLink: "",
+        photoGallery: []
+    },
+    {
+        id: 44, 
+        name: "usman ansari", 
+        surname: "usman ansari", 
+        phone: "9709477991", 
+        email: "", 
+        birth: "", 
+        address: "", 
+        education: "", 
+        brother: "", 
+        password: "",
+        fullName: "Usman Ansari",
+        dateOfBirth: "",
+        gender: "Male",
+        nationality: "Nepali",
+        permanentAddress: "",
+        occupation: "",
+        emergencyContact: "",
+        idNumber: "",
+        socialProfiles: [
+            {
+                platform: "Facebook",
+                url: "https://facebook.com/usman.ansari",
+                username: "usman.ansari"
+            },
+            {
+                platform: "Instagram",
+                url: "https://instagram.com/usman.ansari",
+                username: "usman.ansari"
+            }
+        ],
+        image: "https://via.placeholder.com/150/f8961e/FFFFFF?text=UA", 
+        locationLink: "",
+        photoGallery: []
+    }
+];
+
+    // Social media platform icons and colors
+    const platformIcons = {
+        'Facebook': 'fab fa-facebook-f',
+        'Instagram': 'fab fa-instagram',
+        'Twitter': 'fab fa-twitter',
+        'LinkedIn': 'fab fa-linkedin-in',
+        'GitHub': 'fab fa-github',
+        'YouTube': 'fab fa-youtube',
+        'Snapchat': 'fab fa-snapchat-ghost',
+        'TikTok': 'fab fa-tiktok',
+        'WhatsApp': 'fab fa-whatsapp',
+        'Telegram': 'fab fa-telegram',
+        'Discord': 'fab fa-discord',
+        'Reddit': 'fab fa-reddit',
+        'Pinterest': 'fab fa-pinterest',
+        'Spotify': 'fab fa-spotify',
+        'default': 'fas fa-share-alt'
+    };
+
+    const platformColors = {
+        'Facebook': '#1877f2',
+        'Instagram': '#e4405f', 
+        'Twitter': '#1da1f2',
+        'LinkedIn': '#0a66c2',
+        'GitHub': '#333333',
+        'YouTube': '#ff0000',
+        'Snapchat': '#fffc00',
+        'TikTok': '#000000',
+        'WhatsApp': '#25d366',
+        'Telegram': '#0088cc',
+        'Discord': '#5865f2',
+        'Reddit': '#ff4500',
+        'Pinterest': '#bd081c',
+        'Spotify': '#1db954',
+        'default': '#64748b'
+    };
+
+    // ======== VARIABLES ========
+    let favoriteMemberIds = JSON.parse(localStorage.getItem('favoriteMemberIds')) || [];
+    let isUnlocked = false;
+    let currentPersonSelectorCallback = null;
+    let mediaRecorder;
+    let recordedChunks = [];
+    let activeStream;
+
+    const container = document.getElementById('members-container');
+    const searchInput = document.getElementById('search-input');
+
+    // ======== NOTIFICATION SYSTEM ========
+    function showNotification(title, message, type = 'info', duration = 5000) {
+        const notificationContainer = document.getElementById('notification-container');
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-title">${title}</div>
+            <div class="notification-message">${message}</div>
+        `;
+        
+        notificationContainer.appendChild(notification);
+        
+        setTimeout(function() {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, duration);
+        
+        return notification;
+    }
+
+    // ======== THEME TOGGLE ========
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    let isDarkMode = true;
+
+    themeToggleBtn.addEventListener('click', function() {
+        isDarkMode = !isDarkMode;
+        if (isDarkMode) {
+            document.body.style.background = 'var(--bg-gray)';
+            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+            showNotification('Theme Changed', 'Dark mode activated', 'info');
+        } else {
+            document.body.style.background = 'linear-gradient(135deg, #6dd5ed, #2193b0)';
+            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+            showNotification('Theme Changed', 'Light mode activated', 'info');
+        }
+    });
+
+    // ======== SECURITY GATE ========
+    document.querySelector('.security-icon').addEventListener('click', function() {
+        if (isUnlocked) {
+            showNotification('Security Status', 'Data is already unlocked.', 'info');
+            return;
+        }
+        const code = prompt('Enter Security Code:');
+        if (code === '8848') {
+            isUnlocked = true;
+            document.getElementById('security-gate-message').style.display = 'none';
+            document.getElementById('data-content-wrapper').style.display = 'block';
+            showNotification('Access Granted', 'Welcome to Diamond Data Manager!', 'success');
+            renderMembers(membersData);
+        } else if (code) {
+            showNotification('Access Denied', 'Incorrect security code.', 'error');
+        }
+    });
+
+    // ======== RENDER MEMBERS ========
+    function renderMembers(membersToRender) {
+        if (!isUnlocked) return;
+        container.innerHTML = '';
+        
+        if (membersToRender.length === 0) {
+            container.innerHTML = '<p class="no-results">No members found.</p>';
+            return;
+        }
+        
+        membersToRender.forEach(function(member) {
+            const isFavorite = favoriteMemberIds.includes(member.id);
+            const favClass = isFavorite ? 'active' : '';
+            
+            container.innerHTML += `
+                <div class="member-card" data-id="${member.id}">
+                    <img src="${member.image}" alt="${member.name}" class="profile-picture">
+                    <div class="member-info">
+                        <h3>${member.name}</h3>
+                        <p><i class="fas fa-phone-alt"></i> ${member.phone || 'Not Available'}</p>
+                        <p><i class="fas fa-map-marker-alt"></i> ${member.address || member.permanentAddress || 'Address not set'}</p>
+                        <div class="member-actions">
+                            <button class="action-btn location-btn" data-id="${member.id}">
+                                <i class="fas fa-map-marker-alt"></i> Location
+                            </button>
+                            <button class="action-btn image-btn" data-id="${member.id}">
+                                <i class="fas fa-camera"></i> Images
+                            </button>
+                            <button class="action-btn view-details-btn" data-id="${member.id}">
+                                <i class="fas fa-user"></i> Details
+                            </button>
+                        </div>
+                    </div>
+                    <i class="fas fa-heart favorite-icon ${favClass}" data-id="${member.id}" title="Toggle Favorite"></i>
+                </div>`;
+        });
+    }
+
+    // ======== PAGE NAVIGATION ========
+    const dataManagerSection = document.getElementById('data-manager-section');
+    const rubixthaSection = document.getElementById('rubixtha-section');
+    const dashboardSection = document.getElementById('dashboard-section');
+    const resourcesSection = document.getElementById('resources-section');
+
+    function showSection(sectionToShow) {
+        document.querySelectorAll('.page-section').forEach(function(section) {
+            section.classList.remove('active');
+        });
+        sectionToShow.classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    // Navigation event listeners
+    document.querySelector('.logo-icon').addEventListener('click', function() {
+        const allPhotosContainer = document.getElementById('all-photos-gallery');
+        allPhotosContainer.innerHTML = '';
+        let allPhotos = [];
+        
+        membersData.forEach(function(member) {
+            if (member.photoGallery && member.photoGallery.length > 0) {
+                allPhotos = allPhotos.concat(member.photoGallery);
+            }
+        });
+
+        if (allPhotos.length > 0) {
+            allPhotos.forEach(function(photoUrl) {
+                allPhotosContainer.innerHTML += `<img src="${photoUrl}" class="gallery-photo" alt="Member photo">`;
+            });
+        } else {
+            allPhotosContainer.innerHTML = '<p>No photos have been added to any member galleries yet.</p>';
+        }
+        showSection(rubixthaSection);
+    });
+
+    document.querySelector('.home-icon').addEventListener('click', function(e) {
+        e.preventDefault();
+        showSection(dataManagerSection);
+    });
+
+    document.querySelector('.dashboard-icon').addEventListener('click', function(e) {
+        e.preventDefault();
+        showSection(dashboardSection);
+    });
+
+    document.querySelector('.resources-icon').addEventListener('click', function(e) {
+        e.preventDefault();
+        showSection(resourcesSection);
+    });
+
+    // ======== MODAL FUNCTIONS ========
+    function openModal(id) {
+        document.getElementById(id).style.display = 'flex';
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    // Close modal when clicking outside or on close button
+    document.body.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal-overlay') || e.target.classList.contains('close-btn')) {
+            document.querySelectorAll('.modal-overlay').forEach(function(modal) {
+                modal.style.display = 'none';
+                if (activeStream) {
+                    activeStream.getTracks().forEach(function(track) {
+                        track.stop();
+                    });
+                    activeStream = null;
+                }
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop();
+                }
+            });
+        }
+    });
+
+    // ======== PERSON SELECTOR ========
+    function showPersonSelector(title, callback) {
+        if (!isUnlocked) {
+            showNotification('Access Required', 'Please unlock the data first by clicking the security icon.', 'warning');
+            return;
+        }
+        currentPersonSelectorCallback = callback;
+        document.getElementById('person-selector-title').textContent = title;
+        const selectorContent = document.getElementById('person-selector-content');
+        selectorContent.innerHTML = '';
+        
+        membersData.forEach(function(member) {
+            selectorContent.innerHTML += `
+                <div class="person-option" data-id="${member.id}">
+                    <img src="${member.image}" class="profile-picture" style="width:50px; height:50px;" alt="${member.name}">
+                    <span>${member.name}</span>
+                </div>`;
+        });
+        openModal('person-selector-modal');
+    }
+
+    document.getElementById('person-selector-content').addEventListener('click', function(e) {
+        const personOption = e.target.closest('.person-option');
+        if (personOption && currentPersonSelectorCallback) {
+            const memberId = parseInt(personOption.dataset.id);
+            currentPersonSelectorCallback(memberId);
+            closeModal('person-selector-modal');
+        }
+    });
+
+    // ======== SEARCH FUNCTIONALITY ========
+    searchInput.addEventListener('input', function(e) {
+        if (!isUnlocked) return;
+        const searchTerm = e.target.value.toLowerCase().trim();
+        
+        if (searchTerm === '') {
+            renderMembers(membersData);
+            return;
+        }
+        
+        const filtered = membersData.filter(function(member) {
+            return (
+                (member.name && member.name.toLowerCase().includes(searchTerm)) ||
+                (member.fullName && member.fullName.toLowerCase().includes(searchTerm)) ||
+                (member.phone && member.phone.includes(searchTerm)) ||
+                (member.email && member.email.toLowerCase().includes(searchTerm)) ||
+                (member.address && member.address.toLowerCase().includes(searchTerm)) ||
+                (member.permanentAddress && member.permanentAddress.toLowerCase().includes(searchTerm)) ||
+                (member.occupation && member.occupation.toLowerCase().includes(searchTerm)) ||
+                (member.education && member.education.toLowerCase().includes(searchTerm))
+            );
+        });
+        
+        renderMembers(filtered);
+        
+        if (searchTerm && filtered.length === 0) {
+            showNotification('Search Results', 'No members found matching your search criteria', 'info');
+        } else if (filtered.length > 0) {
+            showNotification('Search Results', `Found ${filtered.length} member(s)`, 'success', 2000);
+        }
+    });
+
+    // ======== MEMBER CARD CLICK HANDLERS ========
+    container.addEventListener('click', function(e) {
+        // Location button
+        if (e.target.classList.contains('location-btn') || e.target.closest('.location-btn')) {
+            const btn = e.target.classList.contains('location-btn') ? e.target : e.target.closest('.location-btn');
+            const member = membersData.find(function(m) {
+                return m.id === parseInt(btn.dataset.id);
+            });
+            if (member && member.locationLink) {
+                window.open(member.locationLink, '_blank');
+            } else {
+                showNotification('Location Unavailable', 'No location link available for this person.', 'warning');
+            }
+        }
+        
+        // Image gallery button
+        if (e.target.classList.contains('image-btn') || e.target.closest('.image-btn')) {
+            const btn = e.target.classList.contains('image-btn') ? e.target : e.target.closest('.image-btn');
+            const member = membersData.find(function(m) {
+                return m.id === parseInt(btn.dataset.id);
+            });
+            const galleryContent = document.getElementById('photo-gallery-content');
+            document.getElementById('photo-gallery-title').textContent = `${member.name}'s Gallery`;
+            galleryContent.innerHTML = '';
+            
+            if (member && member.photoGallery && member.photoGallery.length > 0) {
+                member.photoGallery.forEach(function(photoUrl) {
+                    galleryContent.innerHTML += `<img src="${photoUrl}" class="gallery-photo" alt="${member.name}'s photo">`;
+                });
+            } else {
+                galleryContent.innerHTML = '<p>No photos in this gallery.</p>';
+            }
+            openModal('photo-gallery-modal');
+        }
+        
+        // View details button
+        if (e.target.classList.contains('view-details-btn') || e.target.closest('.view-details-btn')) {
+            const btn = e.target.classList.contains('view-details-btn') ? e.target : e.target.closest('.view-details-btn');
+            const member = membersData.find(function(m) {
+                return m.id === parseInt(btn.dataset.id);
+            });
+            
+            document.getElementById('member-detail-title').innerText = member.fullName || member.name;
+            
+            // Generate social profiles HTML
+            let socialProfilesHTML = '';
+            if (member.socialProfiles && member.socialProfiles.length > 0) {
+                socialProfilesHTML = '<div class="social-profiles-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">';
+                socialProfilesHTML += '<h4 style="color: var(--text-primary); margin-bottom: 15px;">Social Profiles</h4>';
+                socialProfilesHTML += '<div class="social-profiles-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">';
+                
+                member.socialProfiles.forEach(function(profile) {
+                    const iconClass = platformIcons[profile.platform] || platformIcons.default;
+                    const platformColor = platformColors[profile.platform] || platformColors.default;
+                    
+                    socialProfilesHTML += `
+                        <a href="${profile.url}" target="_blank" class="social-profile-link" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--bg-gray); border-radius: 8px; text-decoration: none; color: var(--text-primary); border: 1px solid var(--border-color); transition: all 0.2s ease;">
+                            <i class="${iconClass}" style="color: ${platformColor}; font-size: 18px;"></i>
+                            <div>
+                                <div style="font-weight: 600; font-size: 14px;">${profile.platform}</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">@${profile.username}</div>
+                            </div>
+                        </a>`;
+                });
+                
+                socialProfilesHTML += '</div></div>';
+            }
+
+            document.getElementById('member-detail-content').innerHTML = `
+                <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                    <img src="${member.image}" alt="${member.name}" class="profile-picture" style="width: 100px; height: 100px;">
+                    <div style="margin-left: 20px;">
+                        <h3 style="color: var(--primary-color); margin-bottom: 5px;">${member.fullName || member.name}</h3>
+                        <p>${member.occupation || 'Occupation not specified'}</p>
+                    </div>
+                </div>
+                <div class="detail-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="detail-item">
+                        <span class="detail-label">Full Name:</span> ${member.fullName || 'N/A'}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Surname:</span> ${member.surname || 'N/A'}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Date of Birth:</span> ${member.dateOfBirth || member.birth || 'N/A'}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Gender:</span> ${member.gender || 'N/A'}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Nationality:</span> ${member.nationality || 'N/A'}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Phone:</span> ${member.phone || 'N/A'}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Email:</span> ${member.email || 'N/A'}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Address:</span> ${member.address || 'N/A'}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Permanent Address:</span> ${member.permanentAddress || 'N/A'}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Occupation:</span> ${member.occupation || 'N/A'}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Education:</span> ${member.education || 'N/A'}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Emergency Contact:</span> ${member.emergencyContact || 'N/A'}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">ID Number:</span> ${member.idNumber || 'N/A'}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Brother/Sibling:</span> ${member.brother || 'N/A'}
+                    </div>
+                    ${member.password ? `<div class="detail-item">
+                        <span class="detail-label">Password:</span> ${member.password}
+                    </div>` : ''}
+                </div>
+                ${socialProfilesHTML}
+                <div class="card-actions" style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    ${member.phone ? `<button class="btn" onclick="window.location.href='tel:${member.phone}'"><i class="fas fa-phone"></i> Call</button>` : ''}
+                    ${member.email ? `<button class="btn" onclick="window.location.href='mailto:${member.email}'"><i class="fas fa-envelope"></i> Email</button>` : ''}
+                    ${member.locationLink ? `<button class="btn" onclick="window.open('${member.locationLink}', '_blank')"><i class="fas fa-map-marker-alt"></i> View Location</button>` : ''}
+                </div>`;
+                
+            openModal('member-detail-modal');
+        }
+    });
+
+    // ======== FAVORITE FUNCTIONALITY ========
+    document.body.addEventListener('click', function(e) {
+        const favIcon = e.target.closest('.favorite-icon');
+        if (favIcon) {
+            const id = parseInt(favIcon.dataset.id);
+            const member = membersData.find(function(m) {
+                return m.id === id;
+            });
+            favIcon.classList.toggle('active');
+            const index = favoriteMemberIds.indexOf(id);
+            if (index > -1) {
+                favoriteMemberIds.splice(index, 1);
+                showNotification('Favorites', `${member.name} removed from favorites`, 'info');
+            } else {
+                favoriteMemberIds.push(id);
+                showNotification('Favorites', `${member.name} added to favorites`, 'success');
+            }
+            localStorage.setItem('favoriteMemberIds', JSON.stringify(favoriteMemberIds));
+        }
+    });
+
+    // ======== FILTER BUTTONS ========
+    document.getElementById('location-btn').addEventListener('click', function() {
+        showPersonSelector('Select Person for Location', function(memberId) {
+            const member = membersData.find(function(m) {
+                return m.id === memberId;
+            });
+            if (member && member.locationLink) {
+                window.open(member.locationLink, '_blank');
+            } else {
+                showNotification('Location Unavailable', 'No location link available for this person.', 'warning');
+            }
+        });
+    });
+
+    document.getElementById('image-btn').addEventListener('click', function() {
+        showPersonSelector('Select Person for Photo Gallery', function(memberId) {
+            const member = membersData.find(function(m) {
+                return m.id === memberId;
+            });
+            const galleryContent = document.getElementById('photo-gallery-content');
+            document.getElementById('photo-gallery-title').textContent = `${member.name}'s Gallery`;
+            galleryContent.innerHTML = '';
+            
+            if (member && member.photoGallery && member.photoGallery.length > 0) {
+                member.photoGallery.forEach(function(photoUrl) {
+                    galleryContent.innerHTML += `<img src="${photoUrl}" class="gallery-photo" alt="${member.name}'s photo">`;
+                });
+            } else {
+                galleryContent.innerHTML = '<p>No photos in this gallery.</p>';
+            }
+            openModal('photo-gallery-modal');
+        });
+    });
+
+    // ======== PHOTO GALLERY ZOOM ========
+    document.getElementById('photo-gallery-content').addEventListener('click', function(e) {
+        if (e.target.classList.contains('gallery-photo')) {
+            const zoomOverlay = document.createElement('div');
+            zoomOverlay.className = 'photo-zoom-overlay';
+            zoomOverlay.innerHTML = `<img src="${e.target.src}" alt="Zoomed photo">`;
+            zoomOverlay.onclick = function() {
+                document.body.removeChild(zoomOverlay);
+            };
+            document.body.appendChild(zoomOverlay);
+        }
+    });
+
+    // ======== TO-DO LIST FUNCTIONALITY ========
+    const todoForm = document.getElementById('todo-form');
+    const todoInput = document.getElementById('todo-input');
+    const todoListEl = document.getElementById('todo-list');
+    const todoPriority = document.getElementById('todo-priority');
+    let todos = JSON.parse(localStorage.getItem('todos')) || [];
+
+    function renderTodos() {
+        todoListEl.innerHTML = '';
+        todos.forEach(function(todo, index) {
+            const li = document.createElement('li');
+            li.setAttribute('data-priority', todo.priority);
+            li.innerHTML = `<span>${todo.text}</span> <button class="btn" onclick="removeTodo(${index})">Remove</button>`;
+            todoListEl.appendChild(li);
+        });
+    }
+
+    window.removeTodo = function(index) {
+        todos.splice(index, 1);
+        localStorage.setItem('todos', JSON.stringify(todos));
+        renderTodos();
+        showNotification('To-Do Updated', 'Task removed from your list', 'info');
+    };
+
+    document.getElementById('id-ps-btn').addEventListener('click', function() {
+        renderTodos();
+        openModal('todo-modal');
+    });
+
+    todoForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const taskText = todoInput.value.trim();
+        if (taskText) {
+            todos.push({ text: taskText, priority: todoPriority.value });
+            localStorage.setItem('todos', JSON.stringify(todos));
+            renderTodos();
+            todoInput.value = '';
+            showNotification('To-Do Updated', 'New task added to your list', 'success');
+        }
+    });
+
+    // ======== OTHER FEATURES ========
+    document.getElementById('call-btn').addEventListener('click', function() {
+        showPersonSelector('Select Person to Call', function(memberId) {
+            const member = membersData.find(function(m) {
+                return m.id === memberId;
+            });
+            if (member && member.phone) {
+                window.location.href = `tel:${member.phone}`;
+            } else {
+                showNotification('Call Failed', 'Phone number not available.', 'warning');
+            }
+        });
+    });
+
+    // Initialize the application
+    console.log('Member Data Manager loaded successfully!');
+    console.log('Total members:', membersData.length);
+});
+</script>
+</body>
+</html>

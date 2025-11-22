@@ -10,69 +10,273 @@
     --accent: #2b8aee;
     --danger: #e84141;
   }
+  * {
+    box-sizing: border-box;
+  }
   body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;background:#f4f6fb;}
-  header{display:flex;align-items:center;gap:12px;padding:10px 14px;background:linear-gradient(90deg,#fff,#f1f8ff);border-bottom:1px solid #ddd}
-  header h1{font-size:18px;margin:0;color:#0b3a66}
+  
+  /* Header Styles */
+  header{display:flex;align-items:center;gap:12px;padding:10px 14px;background:linear-gradient(90deg,#fff,#f1f8ff);border-bottom:1px solid #ddd;position:relative;flex-wrap:wrap;}
+  header h1{font-size:18px;margin:0;color:#0b3a66;flex:1;}
   .top-controls{margin-left:auto;display:flex;gap:8px;align-items:center;}
   .control {background:var(--panel-bg);padding:8px;border-radius:8px;border:1px solid #ddd;box-shadow:0 1px 2px rgba(0,0,0,0.03)}
   #search {width:320px;padding:8px;border-radius:6px;border:1px solid #ccc}
+  
+  /* Mobile Menu */
+  .mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+  }
+  
+  /* Main Container */
   #container{display:flex;gap:12px;padding:12px;height:calc(100vh - 74px);box-sizing:border-box}
+  
+  /* Left Panel - Map */
   .left{flex:1;position:relative;background:#e9f0ff;padding:8px;border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
   .map-wrap{position:relative;flex:1;border-radius:8px;overflow:hidden;border:2px solid #ddd;background:#fff}
   #map{
     width:100%;height:100%;display:block;object-fit:contain;
     transform-origin:0 0;
   }
+  
+  /* Markers */
   .marker{position:absolute;transform:translate(-50%,-100%);cursor:pointer;user-select:none}
   .marker .dot{width:18px;height:18px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(43,138,238,0.65);border:2px solid #fff}
   .marker .label{display:block;background:#fff;padding:3px 6px;border-radius:6px;margin-top:4px;font-size:12px;border:1px solid #ddd;white-space:nowrap}
   .marker.blink .dot{animation:blink 0.8s infinite}
   @keyframes blink{0%{box-shadow:0 0 6px rgba(232,65,65,0.3)}50%{box-shadow:0 0 18px rgba(232,65,65,0.9)}100%{box-shadow:0 0 6px rgba(232,65,65,0.3)}}
 
+  /* Right Panel */
   .right{width:420px;display:flex;flex-direction:column;gap:8px}
+  
+  /* Panel Styles */
   .panel{background:var(--panel-bg);padding:10px;border-radius:10px;border:1px solid #ddd;box-shadow:0 1px 4px rgba(0,0,0,0.03);overflow:auto}
   .panel h3{margin:0 0 8px 0;font-size:15px;color:#0b3a66}
+  
+  /* Place List */
   .place-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow:auto}
   .place-row{display:flex;gap:8px;align-items:center;padding:6px;border-radius:6px;border:1px solid #eee}
   .place-row img{width:56px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0}
   .place-row .meta{flex:1}
+  
+  /* Buttons */
   .btn{padding:6px 8px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer}
   .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
   .btn.danger{background:var(--danger);color:#fff;border-color:var(--danger)}
   .small{font-size:13px;padding:4px 6px}
+  
+  /* Forms */
   form.add-form{display:flex;flex-direction:column;gap:8px}
   form.add-form label{font-size:13px;color:#333}
   form.add-form input[type="text"],form.add-form select,form.add-form textarea{padding:8px;border-radius:6px;border:1px solid #ccc}
+  
+  /* Thumbnails */
   .thumbs{display:flex;gap:6px;flex-wrap:wrap}
   .thumbs img, .thumbs video{width:80px;height:64px;object-fit:cover;border-radius:6px;border:1px solid #ccc}
+  
+  /* Suggestions */
   .suggestions{position:absolute;left:12px;top:56px;width:320px;z-index:30;background:#fff;border:1px solid #ccc;border-radius:6px;box-shadow:0 4px 18px rgba(0,0,0,0.08);max-height:240px;overflow:auto}
   .suggestions .item{display:flex;gap:8px;padding:6px;align-items:center;border-bottom:1px solid #f0f0f0;cursor:pointer}
   .suggestions .item:last-child{border-bottom:0}
   .empty{color:#777;font-size:13px;padding:10px}
+  
+  /* Footer */
   .footer{display:flex;gap:8px;align-items:center;justify-content:space-between;padding-top:8px}
+  
+  /* Modal */
   .modal{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:9999}
   .modal.open{display:flex}
   .modal .card{background:#fff;padding:12px;border-radius:8px;max-width:900px;width:95%;max-height:90vh;overflow:auto}
+  
+  /* Gallery */
   .gallery{display:flex;gap:8px;align-items:center}
   .gallery img, .gallery video{max-width:420px;max-height:60vh;object-fit:contain;border-radius:6px;border:1px solid #ddd}
+  
+  /* Center Hint */
   .center-hint{position:absolute;left:50%;transform:translateX(-50%);top:12px;background:#fff;padding:6px 8px;border-radius:8px;border:1px solid #eee;opacity:0.9}
+  
+  /* Category Badge */
   .category-badge{font-size:12px;padding:4px 6px;border-radius:6px;border:1px solid #ddd;background:#fff}
+  
+  /* Controls Row */
   .controls-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
   .cat-filter{display:flex;gap:6px;flex-wrap:wrap}
   .cat-filter button{padding:6px;border-radius:6px;border:1px solid #ddd;background:#fff}
+  
+  /* Share Note */
   .share-note{font-size:12px;color:#666}
+  
+  /* Emergency Panel */
   .emergency-panel{background:#ffecec;padding:10px;border-radius:8px;border:1px solid #f5c6c6}
   .hint{font-size:13px;color:#555}
+  
+  /* Mobile Responsive Styles */
+  @media (max-width: 1024px) {
+    .right {
+      width: 350px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    /* Header adjustments */
+    header {
+      padding: 8px 12px;
+    }
+    
+    .mobile-menu-toggle {
+      display: block;
+    }
+    
+    .top-controls {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      flex-direction: column;
+      align-items: stretch;
+      z-index: 100;
+    }
+    
+    .top-controls.active {
+      display: flex;
+    }
+    
+    .control {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+    
+    #search {
+      width: 100%;
+    }
+    
+    /* Main container adjustments */
+    #container {
+      flex-direction: column;
+      height: auto;
+      padding: 8px;
+      gap: 8px;
+    }
+    
+    .left, .right {
+      width: 100%;
+    }
+    
+    .left {
+      height: 60vh;
+    }
+    
+    /* Panel adjustments */
+    .panel {
+      padding: 8px;
+    }
+    
+    /* Category filter adjustments */
+    .cat-filter {
+      justify-content: center;
+    }
+    
+    /* Place list adjustments */
+    .place-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .place-row img {
+      width: 100%;
+      height: auto;
+      max-height: 120px;
+    }
+    
+    /* Form adjustments */
+    form.add-form input[type="text"], 
+    form.add-form select, 
+    form.add-form textarea {
+      padding: 10px;
+    }
+    
+    /* Button adjustments */
+    .btn {
+      padding: 10px 12px;
+    }
+    
+    /* Gallery adjustments */
+    .gallery {
+      flex-direction: column;
+    }
+    
+    .gallery img, .gallery video {
+      max-width: 100%;
+    }
+    
+    /* Footer adjustments */
+    .footer {
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    /* Emergency panel adjustments */
+    .emergency-panel > div {
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    /* Map controls */
+    .map-controls {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    
+    /* Hide hint on mobile */
+    .center-hint {
+      display: none;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    header h1 {
+      font-size: 16px;
+    }
+    
+    .panel h3 {
+      font-size: 14px;
+    }
+    
+    .cat-filter button {
+      font-size: 12px;
+      padding: 4px 6px;
+    }
+    
+    .thumbs img, .thumbs video {
+      width: 70px;
+      height: 56px;
+    }
+    
+    .gallery img, .gallery video {
+      max-height: 50vh;
+    }
+  }
 </style>
 </head>
 <body>
 
 <header>
+  <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
   <img src="" alt="logo" id="logo" style="width:44px;height:44px;border-radius:6px;background:#fff;border:1px solid #ddd;object-fit:cover">
   <h1>Mini Smart City Map — Gajuri / Malekhu / Galchi</h1>
-  <div class="top-controls">
+  <div class="top-controls" id="topControls">
     <div class="control">
-      <input id="search" placeholder="Search places (alphabetic suggestions) — try typing 'a' or 'ab'..." />
+      <input id="search" placeholder="Search places..." />
       <div id="suggestions" class="suggestions" style="display:none"></div>
     </div>
     <div class="control">
@@ -91,13 +295,13 @@
       <img id="map" src="" alt="map image">
       <!-- markers will be injected -->
     </div>
-    <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+    <div class="map-controls">
       <div class="control">
         <button id="zoomIn" class="btn small">Zoom in</button>
         <button id="zoomOut" class="btn small">Zoom out</button>
         <button id="resetZoom" class="btn small">Reset</button>
       </div>
-      <div class="hint" style="margin-left:auto">All data saved locally in your browser (localStorage)</div>
+      <div class="hint">All data saved locally in your browser (localStorage)</div>
     </div>
   </div>
 
@@ -581,6 +785,23 @@ document.querySelectorAll('.cat-filter button').forEach(btn=>{
     const cat = btn.dataset.cat || '';
     renderPlaceList(cat);
   });
+});
+
+/* =======================
+   MOBILE MENU TOGGLE
+   ======================= */
+document.getElementById('mobileMenuToggle').addEventListener('click', function() {
+  document.getElementById('topControls').classList.toggle('active');
+});
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(e) {
+  const topControls = document.getElementById('topControls');
+  const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+  
+  if (!topControls.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+    topControls.classList.remove('active');
+  }
 });
 
 /* =======================
